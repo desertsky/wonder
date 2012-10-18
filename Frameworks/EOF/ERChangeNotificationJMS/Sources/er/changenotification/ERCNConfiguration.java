@@ -24,14 +24,24 @@ public abstract class ERCNConfiguration {
     private NSArray _changeTypesToSubscribe;
 
     private String _topicName;
+    private String _topicConnectionFactory;
     private boolean _isSubscriberDurable;
 
     private String _initialContextFactory;
     private String _providerURL;
 
+    private String _userName;
+    private String _password;
+
     private long _connectionRecoveryInterval = DEFAULT_CONNECTION_RECOVERY_INTERVAL;
     private long _disconnectionWarningInterval = DEFAULT_DISCONNECTION_WARNING_INTERVAL;
 
+    public static String  propertyPrefix() {
+        return System.getProperty("er.changenotification.property.prefix", PROPERTY_PREFIX);
+    }
+
+    private boolean  _ercnDebugEnabled = false;
+    
     public static class Version {
 
         private static final Pattern _versionPattern = Pattern.compile("^c([0-9]+)\\.([.0-9]*)$");
@@ -75,7 +85,7 @@ public abstract class ERCNConfiguration {
 
         ERCNConfiguration configuration = null;
 
-        String versionString = props.getProperty("er.changenotification.confVersion", "c1.0");
+        String versionString = props.getProperty(propertyPrefix ()+".confVersion",props.getProperty("er.changenotification.confVersion", "c1.0"));
         Version configVersion = new Version(versionString);
 
         if (configVersion.majorVersion() == 1) {
@@ -107,10 +117,26 @@ public abstract class ERCNConfiguration {
         return _topicName;
     }
 
+    public String topicConnectionFactory() {
+        return _topicConnectionFactory;
+    }
+    
+    public String userName() {
+        return _userName;
+    }
+    
+    public String password() {
+        return _password;
+    }
+    
     public boolean isSubscriberDurable() {
         return _isSubscriberDurable;
     }
 
+    public boolean ercnDebugEnabled() {
+        return _ercnDebugEnabled;
+    }
+    
     public String initialContextFactory() {
         return _initialContextFactory;
     }
@@ -160,10 +186,26 @@ public abstract class ERCNConfiguration {
         _topicName = topicName;
     }
 
+    void setTopicConnectionFactory(String topicConnectionFactory) {
+        _topicConnectionFactory = topicConnectionFactory;
+    }
+
+    void setUserName(String userName) {
+        _userName = userName;
+    }
+
+    void setPassword(String password) {
+        _password = password;
+    }
+    
     void setIsSubscriberDurable(boolean isDurable) {
         _isSubscriberDurable = isDurable;
     }
 
+    void setErcnDebugEnabled(boolean ercnDebugEnabled) {
+        _ercnDebugEnabled = ercnDebugEnabled;
+    }
+    
     void setInitialContextFactory(String initialContextFactory) {
         _initialContextFactory = initialContextFactory;
     }

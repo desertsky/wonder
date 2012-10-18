@@ -23,9 +23,11 @@ final class ERCNConfigurationV1 extends ERCNConfiguration {
         setChangeTypesToSubscribe(changeTypesToTrack);
 
         setTopicName(props.getProperty(PROPERTY_PREFIX + ".jms.topicName"));
+        setUserName(props.getProperty(PROPERTY_PREFIX + ".jms.userName"));
+        setPassword(props.getProperty(PROPERTY_PREFIX + ".jms.password"));
 
         setConnectionRecoveryInterval(props.getProperty(PROPERTY_PREFIX + ".connectionRecoveryInterval"));
-        setDisconnectionWarningInterval(props.getProperty(PROPERTY_PREFIX + ".disconnectionWarningInternal"));
+        setDisconnectionWarningInterval(props.getProperty(PROPERTY_PREFIX + ".disconnectionWarningInterval"));
         setIsSubscriberDurable("true".equals(props.getProperty(PROPERTY_PREFIX + ".jms.durableSubscribers")));
 
         String host = System.getProperty(PROPERTY_PREFIX + ".jms.serverHostName", "localhost");
@@ -42,6 +44,7 @@ final class ERCNConfigurationV1 extends ERCNConfiguration {
         setProviderURL(protocol + "://" + host + ":" + port + "/" + jndiName);
 
         setInitialContextFactory("org.exolab.jms.jndi.rmi.RmiJndiInitialContextFactory");
+        setTopicConnectionFactory("JmsTopicConnectionFactory");
 
     }
 

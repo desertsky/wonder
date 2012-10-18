@@ -8,18 +8,88 @@
 # Remove the leading '#' to uncomment a property
 
 #########################################################################
+#  Version1 configuration Settings for backward compatability.
+#########################################################################
+# The host name that the JMS server is running on
+# Default is localhost.
+#er.changenotification.jms.serverHostName = localhost
+
+# Change types to track; Can contain inserted, updated and deleted. 
+#er.changenotification.changeTypesToTrack = (inserted, updated, deleted)
+
+#########################################################################
+#  Version2 configuration Settings.
+#########################################################################
+## IMPORTANT ##
+#########################################################################
+## Version2 only
+## The er.changenotification property prefix can be overridden by setting
+## the system property er.changenotification.property.prefix
+## 
+## example:
+## er.changenotification.property.prefix = my.application
+## my.application.jms.providerURL = tcps://openjms.example.com:3036
+## will take presidence over
+## er.changenotification.jms.providerURL = rmi://192.168.0.100:1099
+#########################################################################
+
+## Configuration Version ## 
+## confVersion = c1.0 is the default for backward compatability.
+er.changenotification.confVersion = c2.0
+
+## Debugging ##
+## Turn on/off Verbose snapshot messages.
+er.changenotification.ercnDebugEnabled = false
+
+
+## Initial Context Factory ##
+# must be a valid Context Factory Class.
+# default is org.exolab.jms.jndi.rmi.RmiJndiInitialContextFactory
+# Example configuraion for HTTP(S) instead of RMI (default)
+#er.changenotification.jms.initialContextFactory = org.exolab.jms.jndi.http.HttpJndiInitialContextFactory
+# Example configuraion for TCP(S) instead of RMI (default)
+#er.changenotification.jms.initialContextFactory = org.exolab.jms.jndi.mipc.IpcJndiInitialContextFactory
+
+## Provider URL ##
+# URL for jms server connection
+# default is rmi://localhost:1099
+#er.changenotification.jms.providerURL = rmi://<hostname>:1099
+#er.changenotification.jms.providerURL = http://<hostname>:8080
+#er.changenotification.jms.providerURL = https://<hostname>:8443
+#er.changenotification.jms.providerURL = tcp://<hostname>:3035
+
+## Topic Connection Factory. ##
+# Value from Connnector declaration being used in openjms server configruation file.
+# See openjms documentation.
+# Default is JmsTopicConnectionFactory
+
+## Keystore and Truststore paths and password ##
+# Required for https or tcps connections.
+#javax.net.ssl.trustStore = /System/Library/OpenSSL/certs/openjms.trust
+#javax.net.ssl.keyStore = /System/Library/OpenSSL/certs/openjms.key
+#javax.net.ssl.keyStorePassword = diamondbacks
+
+## Change types to publish/subscribe ##
+# Can contain inserted, updated and deleted.
+er.changenotification.changeTypesToPublish = (inserted, updated, deleted)
+er.changenotification.changeTypesToSubscribe = (inserted, updated, deleted)
+
+#########################################################################
 # Common Settings
 #########################################################################
 
-# The host name that the JMS server is running on
-er.changenotification.jms.serverHostName = localhost
+
+# JMS username and password.
+# Not required if security is not enabled on jmsserver.
+er.changenotification.jms.userName = admin	
+er.changenotification.jms.password = openjms
 
 # Entities *not* to synchronize
 # er.changenotification.entitiesNotToSynchronize = (TalentPhoto)
 er.changenotification.entitiesNotToSynchronize = ()
 
 # Change types to track; Can contain inserted, updated and deleted. 
-er.changenotification.changeTypesToTrack = (inserted, updated, deleted)
+#er.changenotification.changeTypesToTrack = (inserted, updated, deleted)
 
 # JMS topic name (Destination object) to pass the notifications. 
 # Specify one and register it from the OpenJMS administration tool or 
@@ -34,6 +104,7 @@ er.changenotification.jms.topicName = business logic group 1
 # false - suggested for both development and deployment
 #
 #         Please do *not* set it true, otherwise OpenJMS 0.7.3.1 server 
+
 #         will fail with some databases (PostgreSQL, FrontBase, etc.)
 # 
 # If it's set to true, you need properly to shut down the applications 
@@ -43,4 +114,13 @@ er.changenotification.jms.topicName = business logic group 1
 #
 er.changenotification.jms.durableSubscribers = false
 
+# Recovery interval (seconds). 
+# How often to retry connecting if connection fails.
+# Default is 15 seconds
+#er.changenotification.connectionRecoveryInterval = 15
+
+Disconnection Warning Interval (seconds).
+# Interval between disconnect dosconnect log entries. 
+# Default is 1 hour (3600 seconds)
+#er.changenotification.disconnectionWarningInterval = 3600
 

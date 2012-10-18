@@ -86,7 +86,7 @@ class ERCNSubscriber implements MessageListener {
     public void onMessage(Message message) {
         try {
             ERCNSnapshot snapshot = (ERCNSnapshot) ((ObjectMessage)message).getObject();
-            if (NSLog.debug.isEnabled())
+            if (NSLog.debug.isEnabled() && _coordinator.configuration().ercnDebugEnabled())
                 NSLog.debug.appendln(ERCNNotificationCoordinator.LOG_HEADER
                         + "Received a message with snapshot: " + snapshot);
 
@@ -99,6 +99,7 @@ class ERCNSubscriber implements MessageListener {
             if (ERCNSnapshot.shouldApplyChangeFor(ERCNSnapshot.UPDATED))
                 _processUpdates(snapshot);
 
+            if (NSLog.debug.isEnabled() && _coordinator.configuration().ercnDebugEnabled())
             NSLog.debug.appendln(ERCNNotificationCoordinator.LOG_HEADER + "Finished processing changes.");
         } catch (JMSException ex) {
             NSLog.err.appendln(ERCNNotificationCoordinator.LOG_HEADER
@@ -158,7 +159,7 @@ class ERCNSubscriber implements MessageListener {
             Enumeration snapshotsEnumerator = snapshots.objectEnumerator();
             while (snapshotsEnumerator.hasMoreElements()) {
                 NSDictionary snapshot = (NSDictionary)snapshotsEnumerator.nextElement();
-                if (NSLog.debug.isEnabled())
+                if (NSLog.debug.isEnabled() && _coordinator.configuration().ercnDebugEnabled())
                     NSLog.debug.appendln(ERCNNotificationCoordinator.LOG_HEADER + "Snapshot: " + snapshot);
                 if (snapshot != null) {
                     EOGlobalID globalID = entity.globalIDForRow(snapshot);

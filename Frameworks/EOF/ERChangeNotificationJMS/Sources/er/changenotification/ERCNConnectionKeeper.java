@@ -6,13 +6,25 @@
 //
 package er.changenotification;
 
-import com.webobjects.foundation.*;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import java.util.*;
-import java.text.*;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.naming.CommunicationException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
 
-import javax.naming.*;
-import javax.jms.*;
+import com.webobjects.foundation.NSLog;
+import com.webobjects.foundation.NSTimestamp;
 
 class ERCNConnectionKeeper implements ExceptionListener {
 
@@ -24,6 +36,7 @@ class ERCNConnectionKeeper implements ExceptionListener {
 
     private Topic _topic;
     private TopicConnection _connection;
+    private String  _topicConnectionFactory;
 
     private boolean _isConnected = false;
 
@@ -40,12 +53,13 @@ class ERCNConnectionKeeper implements ExceptionListener {
         }
 
         Properties properties = _coordinator.configuration().jmsProperties();
+        _topicConnectionFactory = _coordinator.configuration().topicConnectionFactory();
         //NSLog.debug.appendln(ERCNNotificationCoordinator.LOG_HEADER + "properties: " + properties);
 
         TopicConnectionFactory connectionFactory = null;
         try {
             Context context = new InitialContext(properties);
-            connectionFactory = (TopicConnectionFactory) context.lookup("JmsTopicConnectionFactory");
+            connectionFactory = (TopicConnectionFactory) context.lookup(_topicConnectionFactory);
             _topic = (Topic) context.lookup(_coordinator.configuration().topicName());
         } catch (CommunicationException ex) {
             // javax.naming.CommunicationException -- no JNDI server
@@ -57,8 +71,14 @@ class ERCNConnectionKeeper implements ExceptionListener {
             return;
         } catch (NameNotFoundException ex) {
             // javax.naming.NameNotFoundException -- no topic
-            new RuntimeException("Cannot find the topic with name \"" + _coordinator.configuration().topicName() + "\"."
-                    + "Please check if the JMS server is properly configured: " + ex.getMessage());
+            if (verboseLogging) {
+                NSLog.err.appendln(ERCNNotificationCoordinator.LOG_HEADER
+                        + "Cannot find the topic with name \"" + _coordinator.configuration().topicName() + "\". "
+                        + "Please check if the JMS server is properly configured.");
+            }         
+            // new RuntimeException("Cannot find the topic with name \"" + _coordinator.configuration().topicName() + "\"."
+            //       + "Please check if the JMS server is properly configured: " + ex.getMessage());
+            return;
         } catch (NamingException ex) {
             if (verboseLogging) {
                 NSLog.err.appendln(ERCNNotificationCoordinator.LOG_HEADER
@@ -67,13 +87,8 @@ class ERCNConnectionKeeper implements ExceptionListener {
             return;
         }
 
-        String providerName = null;
-        String providerVersion = null;
         try {
             _connection = connectionFactory.createTopicConnection();
-            ConnectionMetaData metaData = _connection.getMetaData();
-            providerName = metaData.getJMSProviderName();
-            providerVersion = metaData.getProviderVersion();
 
             // Set itself as the exception listener.
             _connection.setExceptionListener(this);
@@ -98,8 +113,7 @@ class ERCNConnectionKeeper implements ExceptionListener {
             return;
         }
 
-        NSLog.out.appendln(ERCNNotificationCoordinator.LOG_HEADER + "Connected to the JMS server: "
-                + providerName + " " + providerVersion);
+        NSLog.out.appendln(ERCNNotificationCoordinator.LOG_HEADER + "Connected to the JMS server: " +_coordinator.configuration().providerURL());
 
         _isConnected = true;
     }
