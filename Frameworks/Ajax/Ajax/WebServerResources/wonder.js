@@ -177,7 +177,11 @@ var AjaxOnDemand = {
 	
 	loadedCSS: function(request) {
 		var inlineStyle = new Element("style", {"type": "text/css"});
-		inlineStyle.appendChild(document.createTextNode(request.responseText));
+		if (inlineStyle.styleSheet) { // IE does it this way
+			inlineStyle.styleSheet.cssText = request.responseText;
+		} else { // everyone else does it this way
+			inlineStyle.appendChild(document.createTextNode(request.responseText));
+		}
 		document.getElementsByTagName('HEAD')[0].appendChild(inlineStyle);
 	}
 };
