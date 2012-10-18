@@ -100,6 +100,7 @@ public class AjaxFlexibleFileUpload extends AjaxFileUpload {
 		public static final String clearButtonClass = "clearButtonClass";
 		public static final String injectDefaultCSS = "injectDefaultCSS";
 		public static final String clearUploadProgressOnSuccess = "clearUploadProgressOnSuccess";
+		public static final String onClickBefore = "onClickBefore";
 	}
 	
 	private String _refreshTime;
@@ -189,6 +190,10 @@ public class AjaxFlexibleFileUpload extends AjaxFileUpload {
     		_options.add("autoSubmit:false");
     	}
     	_options.add("onSubmit:" + onSubmitFunction());
+    	
+    	String onClickBefore = (String)this.valueForBinding(Keys.onClickBefore);
+    	if (onClickBefore != null) _options.addObject(String.format("onClickBefore:'%s'", onClickBefore.replaceAll("'", "\\\\'")));
+    	
     	return _options.immutableClone();
     }
     
@@ -331,6 +336,13 @@ public class AjaxFlexibleFileUpload extends AjaxFileUpload {
 				} 
 			} else {
 				state = UploadState.STARTED;
+				// isDone can happen when a file with no EOF is upload
+				// isFailed can happen when the upload request handler throws an
+				//     exception before the upload started (wrong file extension uploaded or exceeds file size)
+				if (progress.isDone() || progress.isFailed()) {
+					state = UploadState.FAILED;
+					uploadFailed();
+				}
 			}
 		}
 		if (log.isDebugEnabled()) log.debug("AjaxFlexibleFileUpload.refreshState: " + state);
@@ -555,6 +567,7 @@ public class AjaxFlexibleFileUpload extends AjaxFileUpload {
 	 */
 	@Override
 	public WOActionResults uploadFailed() {
+		if (_progress != null && _progress.failure() != null && canSetValueForBinding("failure")) setValueForBinding(_progress.failure(), "failure");
 		clearUploadProgress();
 		return super.uploadFailed();
 	}
@@ -607,7 +620,6 @@ public class AjaxFlexibleFileUpload extends AjaxFileUpload {
   public Boolean clearUploadProgressOnSuccess() {
     if (_clearUploadProgressOnSuccess == null) {
       _clearUploadProgressOnSuccess = ERXValueUtilities.BooleanValueWithDefault(valueForBinding(Keys.clearUploadProgressOnSuccess), Boolean.FALSE);
-      System.out.println("clearUploadProgressOnSuccess: " + _clearUploadProgressOnSuccess);
     }
     return _clearUploadProgressOnSuccess;
   }
