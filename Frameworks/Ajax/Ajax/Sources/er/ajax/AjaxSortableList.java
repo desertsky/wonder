@@ -148,11 +148,20 @@ public class AjaxSortableList extends AjaxComponent {
     onUpdateBuffer.append("var data = Sortable.serialize('" + containerID + "', { name:'" + _sortOrderKeyName + "'});");
     onUpdateBuffer.append("var ajaxRequest = new Ajax.Request('" + _actionUrl + "', {method: 'get', parameters: data});");
     if (canGetValueForBinding("onUpdate")) {
-      String onUpdate = (String) valueForBinding("onUpdate");
-      onUpdateBuffer.append(" var parentOnUpdate = ");
-      onUpdateBuffer.append(onUpdate);
-      onUpdateBuffer.append(";");
-      onUpdateBuffer.append("parentOnUpdate(container);");
+    	//
+    	// from webobjects-dev@list.apple.com fix for AjaxUpdateContainer around AjaxSortableList
+    	// MHAST: - the problem as I see it is that the old code declared a js variable parentOnUpdate
+    	//        - every time the list gets resorted the update container is redrawn and a new variable parentOnUpdate is created
+    	//        => SOLUTION: why not call the onUpdate function directly ???
+    	//
+    	String onUpdate = (String) valueForBinding("onUpdate");
+    	onUpdateBuffer.append(onUpdate);
+    	onUpdateBuffer.append(";");
+//
+//      onUpdateBuffer.append(" var parentOnUpdate = ");
+//      onUpdateBuffer.append(onUpdate);
+//      onUpdateBuffer.append(";");
+//      onUpdateBuffer.append("parentOnUpdate(container);");
     }
     onUpdateBuffer.append("}");
     return onUpdateBuffer.toString();
