@@ -32,10 +32,9 @@ and limitations under the License.
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#if defined(WIN32)
+#if	defined(WIN32)
 #include <windows.h>
 /* Windows doesn't have random(). */
-#define srandom(x) srand(x)
 #define random() rand()
 #endif
 
@@ -43,8 +42,12 @@ and limitations under the License.
 
 static int rnd_initialize(strtbl *options)
 {
-  int ret = 0;
-#if !defined(MACOS)
+   int ret = 0;
+#if defined(WIN32)
+   time_t now;
+   time(&now);
+   srand(now);
+#elif defined(SOLARIS) || defined(LINUX)
    time_t now;
    time(&now);
    srandom(now);
