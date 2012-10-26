@@ -56,7 +56,6 @@ HTTPRequest *req_new(const char *method, char *uri)
    req->method_str = (method ? method : "");
    req->method = get_http_method(method);
    req->request_str = uri;		/* no strdup(), but we free */
-   req->shouldProcessUrl = 1;
    return req;
 }
 
@@ -126,8 +125,7 @@ void req_reformatRequest(HTTPRequest *req, WOAppReq *app, WOURLComponents *wc, c
    strcat(req->request_str," ");
    req_addHeader(req, REQUEST_METHOD_HEADER, req->method_str, 0);
    
-   ComposeURL(req->request_str + strlen(req->request_str), wc, req->shouldProcessUrl);
-
+   ComposeURL(req->request_str + strlen(req->request_str), wc);
    strcat(req->request_str," ");
    if (http_version) {
       strcat(req->request_str,http_version);
@@ -218,7 +216,7 @@ static void setupIOVec(const char *key, const char *value, struct iovec **iov)
    (*iov)++;
    (*iov)->iov_base = (void *)value;
    (*iov)->iov_len = strlen(value);
-   while (value[(*iov)->iov_len - 1] == '\r' || value[(*iov)->iov_len - 1] == '\n')
+   while ((*iov)->iov_len > 0 && (value[(*iov)->iov_len - 1] == '\r' || value[(*iov)->iov_len - 1] == '\n'))
       (*iov)->iov_len--;
    (*iov)++;
    (*iov)->iov_base = "\r\n";
