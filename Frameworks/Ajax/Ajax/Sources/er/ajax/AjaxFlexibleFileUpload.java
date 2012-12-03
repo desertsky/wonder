@@ -62,6 +62,7 @@ import er.extensions.localization.ERXLocalizer;
  * @binding clearButtonClass class for the select file button (defaults to "Button ObjButton ClearUploadObjButton")
  * @binding clearUploadProgressOnSuccess if true, displays the select file button instead of the uploaded file name on completion of a successful upload
  * @binding mimeType set from the content-type of the upload header if available
+ * @binding onClickBefore if the given function returns true, the onClick is executed.  This is to support confirm(..) dialogs.
  * 
  * @author dleber
  * @author mschrag
