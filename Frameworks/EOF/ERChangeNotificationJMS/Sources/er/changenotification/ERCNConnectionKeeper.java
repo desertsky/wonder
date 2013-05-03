@@ -36,7 +36,9 @@ class ERCNConnectionKeeper implements ExceptionListener {
 
     private Topic _topic;
     private TopicConnection _connection;
-    private String  _topicConnectionFactory;
+    private String  _topicConnectionFactory;   
+    private String _userName; 
+    private String _password;
 
     private boolean _isConnected = false;
 
@@ -53,6 +55,8 @@ class ERCNConnectionKeeper implements ExceptionListener {
         }
 
         Properties properties = _coordinator.configuration().jmsProperties();
+        _userName  = _coordinator.configuration().userName();
+        _password  = _coordinator.configuration().password();
         _topicConnectionFactory = _coordinator.configuration().topicConnectionFactory();
         //NSLog.debug.appendln(ERCNNotificationCoordinator.LOG_HEADER + "properties: " + properties);
 
@@ -88,7 +92,7 @@ class ERCNConnectionKeeper implements ExceptionListener {
         }
 
         try {
-            _connection = connectionFactory.createTopicConnection();
+            _connection = connectionFactory.createTopicConnection(_userName,_password);
 
             // Set itself as the exception listener.
             _connection.setExceptionListener(this);
