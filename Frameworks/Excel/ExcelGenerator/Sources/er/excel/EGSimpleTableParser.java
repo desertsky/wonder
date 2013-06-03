@@ -24,9 +24,11 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.Region;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -471,6 +473,17 @@ public class EGSimpleTableParser {
     						if(style != null) {
     							cell.setCellStyle(style);
     						}
+    					}
+    					String mergeAcrossString = dictValueForKey(cellDict, "mergeAcross", "false");
+    					boolean mergeAcross = Boolean.valueOf(mergeAcrossString);
+    					if (colspan > 1 && mergeAcross) {
+    						//
+    						// NOTE: rowNum gets incremented before entering this cell loop => rowNum - 1 is the actual row
+    						//
+    						int firstAndLastRow = rowNum - 1;
+    						int firstCol = row.getPhysicalNumberOfCells() - colspan;
+    						int lastCol = row.getPhysicalNumberOfCells() - 1;
+	    					sheet.addMergedRegion(new CellRangeAddress(firstAndLastRow, firstAndLastRow, firstCol, lastCol));
     					}
     					
     					if(log.isDebugEnabled()) {
