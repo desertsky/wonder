@@ -7,7 +7,6 @@ import com.webobjects.directtoweb.D2WContext;
 import com.webobjects.directtoweb.ERD2WContext;
 import com.webobjects.eoaccess.EODatabaseDataSource;
 import com.webobjects.eoaccess.EOEntity;
-import com.webobjects.eoaccess.EOModel;
 import com.webobjects.eoaccess.EOModelGroup;
 import com.webobjects.eoaccess.EOUtilities;
 import com.webobjects.eocontrol.EOEnterpriseObject;
@@ -29,7 +28,7 @@ public class Main extends ERD2WPage {
     public Main(WOContext context) {
         super(context);
         setEditingContext(session().defaultEditingContext());
-        entities = ((EOModel) EOModelGroup.defaultGroup().models().lastObject()).entities();
+        entities = EOModelGroup.defaultGroup().models().lastObject().entities();
         displayGroup = new WODisplayGroup();
         setTaskEntity("edit", EOUtilities.entityNamed(editingContext(), "String"));
     }

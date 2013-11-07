@@ -233,9 +233,9 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      *                  <code>CFBundleShortVersionString</code> in its
      *                  <code>info.plist</code> resource.
      *                  
-     * @see #versionStringForApplication
-     * @see #webObjectsVersion
-     * @see ERXStringUtilities#removeExtraDotsFromVersionString
+     * @see #versionStringForApplication()
+     * @see #webObjectsVersion()
+     * @see ERXStringUtilities#removeExtraDotsFromVersionString(String)
      * </span>
      * 
      * <span class="ja">
@@ -247,9 +247,9 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * 
      * @return バージョン番号を文字列として戻ります。フレームワークが見つからない場合には null-string が戻ります。
      * 
-     * @see #versionStringForApplication
-     * @see #webObjectsVersion
-     * @see ERXStringUtilities#removeExtraDotsFromVersionString
+     * @see #versionStringForApplication()
+     * @see #webObjectsVersion()
+     * @see ERXStringUtilities#removeExtraDotsFromVersionString(String)
      * </span>
      */ 
     @SuppressWarnings("javadoc")
@@ -333,8 +333,8 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * 
      * @return WebObjects version number as string
      * 
-     * @see #webObjectsVersionAsDouble
-     * @see ERXStringUtilities#removeExtraDotsFromVersionString
+     * @see #webObjectsVersionAsDouble()
+     * @see ERXStringUtilities#removeExtraDotsFromVersionString(String)
      * </span>
      * 
      * <span class="ja">
@@ -344,8 +344,8 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * 
      * @return WebObjects バージョン番号を String として戻ります。
      * 
-     * @see #webObjectsVersionAsDouble
-     * @see ERXStringUtilities#removeExtraDotsFromVersionString
+     * @see #webObjectsVersionAsDouble()
+     * @see ERXStringUtilities#removeExtraDotsFromVersionString(String)
      * </span>
      * @deprecated Wonder is used with WO 5.4 only
      */ 
@@ -563,7 +563,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
 		NSArray value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof NSArray) {
 			value = (NSArray) cachedValue;
@@ -632,7 +632,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
         boolean value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof Boolean) {
 			value = ((Boolean) cachedValue).booleanValue();
@@ -702,7 +702,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
 		NSDictionary value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof NSDictionary) {
 			value = (NSDictionary) cachedValue;
@@ -740,7 +740,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
     public static boolean hasKey(String key, boolean ignoreEmptyValue) {
     	final String propertyName = getApplicationSpecificPropertyName(key);
     	Object cachedValue = _cache.get(propertyName);
-    	if (cachedValue == null || cachedValue == UndefinedMarker) {
+    	if (cachedValue == null || UndefinedMarker.equals(cachedValue)) {
     		String value = ERXSystem.getProperty(key);
     		return value != null && !(ignoreEmptyValue && value.length() == 0);
     	}
@@ -893,7 +893,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
 
         Object value = _cache.get(propertyName);
-        if (value == UndefinedMarker) {
+        if (UndefinedMarker.equals(value)) {
             return defaultValue;
         }
         if (value instanceof BigDecimal) {
@@ -935,7 +935,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
 		int value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof Integer) {
 			value = ((Integer) cachedValue).intValue();
@@ -979,7 +979,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         final String propertyName = getApplicationSpecificPropertyName(s);
 		long value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof Long) {
 			value = ((Long) cachedValue).longValue();
@@ -1024,7 +1024,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
 
 		float value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof Float) {
 			value = ((Float) cachedValue).floatValue();
@@ -1069,7 +1069,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
 
 		double value;
 		Object cachedValue = _cache.get(propertyName);
-		if (cachedValue == UndefinedMarker) {
+		if (UndefinedMarker.equals(cachedValue)) {
 			value = defaultValue;
 		} else if (cachedValue instanceof Double) {
 			value = ((Double) cachedValue).doubleValue();
@@ -1160,7 +1160,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * <span class="ja">
      * 	指定プロパティー名とデフォルト暗号化方法 (propertyName.encrypted=true) を使って復元されている値を戻します。
      * 	例えば、my.password を取得する場合、my.password.encrypted=true も設定されていれば、
-     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto.defaultCrypter} を使用します。
+     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto#defaultCrypter()} を使用します。
      * 
      * 	@param propertyName - プロパティー名
      * 
@@ -1176,7 +1176,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * <span class="en">
      * If the <code>propertyName.encrypted</code> property is set to true, returns
      * the plain text value of the given property name, after decrypting it with the
-     * {@link er.extensions.crypting.ERXCrypto.defaultCrypter}. For instance, if you are requesting
+     * {@link er.extensions.crypting.ERXCrypto#defaultCrypter()}. For instance, if you are requesting
      * my.password and <code>my.password.encrypted</code> is set to true,
      * the value of <code>my.password</code> will be sent to the default crypter's
      * decrypt() method.
@@ -1190,7 +1190,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * <span class="ja">
      * 	指定プロパティー名とデフォルト暗号化方法 (propertyName.encrypted=true) を使って復元されている値を戻します。
      * 	例えば、my.password を取得する場合、my.password.encrypted=true も設定されていれば、
-     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto.defaultCrypter} を使用します。
+     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto#defaultCrypter()} を使用します。
      * 
      * 	@param propertyName - プロパティー名
      * 	@param defaultValue - プロパティーが無ければ、デフォルト値
@@ -1218,7 +1218,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
     /**
      * <span class="en">
      * Returns the decrypted value for the given property name using the
-     * {@link er.extensions.crypting.ERXCrypto.defaultCrypter}. This is slightly different than
+     * {@link er.extensions.crypting.ERXCrypto#defaultCrypter()}. This is slightly different than
      * decryptedStringWithKeyWithDefault in that it does not require  the encrypted
      * property to be set.
      *  
@@ -1231,7 +1231,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * <span class="ja">
      * 	指定プロパティー名とデフォルト暗号化方法 (propertyName.encrypted=true) を使って復元されている値を戻します。
      * 	例えば、my.password を取得する場合、my.password.encrypted=true も設定されていれば、
-     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto.defaultCrypter} を使用します。
+     * 	my.password は復元する時にデフォルト暗号化方法 {@link er.extensions.crypting.ERXCrypto#defaultCrypter()} を使用します。
      *  
      * 	@param propertyName - プロパティー名
      * 	@param defaultValue - プロパティーが無ければ、暗号化されているデフォルト値
@@ -1620,6 +1620,8 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
 			}
 		}
 
+		optionalPropertiesLoader(ERXSystem.getProperty("user.name"), propertiesPaths, projectsInfo);
+		
         /** /etc/WebObjects/AppName/Properties -- per-Application-per-Machine properties */
         String applicationMachinePropertiesPath = ERXProperties.applicationMachinePropertiesPath("Properties");
     	addIfPresent("Application-Machine Properties", applicationMachinePropertiesPath, propertiesPaths, projectsInfo);
@@ -1631,8 +1633,6 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
         /** Properties.<userName> -- per-Application-per-User properties */
         String applicationUserPropertiesPath = ERXProperties.applicationUserProperties();
     	addIfPresent("Application-User Properties", applicationUserPropertiesPath, propertiesPaths, projectsInfo);
-        
-        optionalPropertiesLoader(ERXSystem.getProperty("user.name"), propertiesPaths, projectsInfo);
 
         /*  Report the result */
 		if (reportLoggingEnabled && projectsInfo.count() > 0 && log.isInfoEnabled()) {
@@ -1754,7 +1754,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * Apply the current configuration to the supplied properties.
      * @param source
      * @param commandLine
-     * @return
+     * @return the applied properties
      */
     public static Properties applyConfiguration(Properties source, Properties commandLine) {
 
@@ -1943,7 +1943,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * Returns the application-specific variant properties for the given bundle.
      * @param userName 
      * @param bundleName 
-     * @return 
+     * @return the application-specific variant properties for the given bundle.
      */
     public static String variantPropertiesInBundle(String userName, String bundleName) {
     	String applicationUserPropertiesPath = null;
@@ -1960,7 +1960,7 @@ public class ERXProperties extends Properties implements NSKeyValueCoding {
      * <span class="en">
      * Returns the application-specific user properties.
      * 
-     * @return 
+     * @return the application-specific user properties
      * </span>
      * 
      * <span class="ja">

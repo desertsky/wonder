@@ -4,4 +4,4 @@ build
 *.xcodeproj
 *.pbxproj
 ant.*
-
+dist

@@ -49,6 +49,7 @@ public class AjaxFileUploadRequestHandler extends WORequestHandler {
 		_maxUploadSize = maxUploadSize;
 	}
 
+	@Override
 	public WOResponse handleRequest(WORequest request) {
 		WOApplication application = WOApplication.application();
 		application.awake();
@@ -89,6 +90,9 @@ public class AjaxFileUploadRequestHandler extends WORequestHandler {
 					WOSession session = null;
 					if (context._requestSessionID() != null) {
 						session = WOApplication.application().restoreSessionWithID(sessionId, context);
+					}
+					if (session == null) {
+						throw new Exception("No valid session!");
 					}
 					File tempFile = File.createTempFile("AjaxFileUpload", ".tmp", _tempFileFolder);
 					tempFile.deleteOnExit();

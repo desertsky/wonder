@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -371,7 +370,7 @@ public class ERXRestUtils {
 				try {
 					boolean spaces = strValue.indexOf(' ') != -1;
 					formatter = ERXRestUtils.jodaLocalDateTimeFormat(spaces, context);
-					parsedValue = new LocalDateTime((DateTime)formatter.parseDateTime(strValue));
+					parsedValue = new LocalDateTime(formatter.parseDateTime(strValue));
 				}
 				catch (Throwable t) {
 					String msg = "Failed to parse '" + strValue + "' as a timestamp";
@@ -393,7 +392,7 @@ public class ERXRestUtils {
 				try {
 					boolean spaces = strValue.indexOf(' ') != -1;
 					formatter = ERXRestUtils.jodaLocalDateFormat(spaces, context);
-					parsedValue = new LocalDate((DateTime)formatter.parseDateTime(strValue));
+					parsedValue = new LocalDate(formatter.parseDateTime(strValue));
 				}
 				catch (Throwable t) {
 					String msg = "Failed to parse '" + strValue + "' as a timestamp";

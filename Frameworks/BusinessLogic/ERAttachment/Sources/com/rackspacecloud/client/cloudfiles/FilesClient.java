@@ -49,6 +49,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -148,10 +149,10 @@ public class FilesClient
             authUrl = FilesUtil.getProperty("auth_url");
         }
         if(account != null && account.length() > 0) {
-            this.authenticationURL = authUrl + VERSION + "/" + account + FilesUtil.getProperty("auth_url_post");
+            authenticationURL = authUrl + VERSION + "/" + account + FilesUtil.getProperty("auth_url_post");
         }
         else {
-            this.authenticationURL = authUrl;
+            authenticationURL = authUrl;
         }
         this.connectionTimeOut = connectionTimeOut;
 
@@ -159,7 +160,7 @@ public class FilesClient
 
         if(logger.isDebugEnabled()) {
             logger.debug("UserName: " + this.username);
-            logger.debug("AuthenticationURL: " + this.authenticationURL);
+            logger.debug("AuthenticationURL: " + authenticationURL);
             logger.debug("ConnectionTimeOut: " + this.connectionTimeOut);
         }
      }
@@ -318,7 +319,7 @@ public class FilesClient
     {
     	isLoggedin   = true;
     	this.storageURL = storageURL;
-    	this.cdnManagementURL = cdnManagmentUrl;
+    	cdnManagementURL = cdnManagmentUrl;
     	this.authToken = authToken;
     	return true;
     }
@@ -2126,7 +2127,8 @@ public class FilesClient
     				if (useETag) {
     					method.setHeader(FilesConstants.E_TAG, md5Sum (obj));
     				}
-    				method.setEntity( new RequestEntityWrapper(new FileEntity (obj, contentType), callback));
+    				ContentType ct = ContentType.create(contentType);
+    				method.setEntity(new RequestEntityWrapper(new FileEntity(obj, ct), callback));
     				for(String key : metadata.keySet()) {
     					method.setHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
     				}
@@ -2141,7 +2143,7 @@ public class FilesClient
     	    				if (useETag) {
     	    					method.setHeader(FilesConstants.E_TAG, md5Sum (obj));
     	    				}
-    	    				method.setEntity( new RequestEntityWrapper(new FileEntity (obj, contentType), callback));
+    	    				method.setEntity(new RequestEntityWrapper(new FileEntity(obj, ct), callback));
     	    				for(String key : metadata.keySet()) {
     	    					method.setHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
     	    				}
@@ -2627,7 +2629,7 @@ public String storeObjectAs(String container, String name, HttpEntity entity, Ma
      * @return The object's metadata
      * @throws IOException   There was an IO error doing network communication
      * @throws HttpException There was an error with the HTTP protocol
-     * @throws FilesAuthorizationException The Client's Login was invalid.  
+     * @throws FilesAuthorizationException The Client's Login was invalid
      * @throws FilesInvalidNameException The container or object name was not valid
      * @throws FilesNotFoundException The file was not found
      */
@@ -3113,7 +3115,7 @@ public String storeObjectAs(String container, String name, HttpEntity entity, Ma
      */
     public void setUserName(String userName)
     {
-    	this.username = userName;
+    	username = userName;
     }
 
     /**

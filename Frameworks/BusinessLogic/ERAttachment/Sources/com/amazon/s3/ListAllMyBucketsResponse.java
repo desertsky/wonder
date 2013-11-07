@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.SimpleTimeZone;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Returned by AWSAuthConnection.listAllMyBuckets().
@@ -37,7 +37,7 @@ public class ListAllMyBucketsResponse extends Response {
         super(connection);
         if (connection.getResponseCode() < 400) {
             try {
-                XMLReader xr = Utils.createXMLReader();;
+                XMLReader xr = Utils.createXMLReader();
                 ListAllMyBucketsHandler handler = new ListAllMyBucketsHandler();
                 xr.setContentHandler(handler);
                 xr.setErrorHandler(handler);

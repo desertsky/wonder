@@ -920,8 +920,6 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	 * @author ak
 	 */
 	public static class JarChecker {
-		private static final Logger log = Logger.getLogger(JarChecker.class);
-
 		private static class Entry {
 			long _size;
 			String _jar;
@@ -941,7 +939,10 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 
 			@Override
 			public boolean equals(Object other) {
-				return ((Entry) other).size() == size();
+				if (other != null && other instanceof Entry) {
+					return ((Entry) other).size() == size();
+				}
+				return false;
 			}
 
 			@Override
@@ -1231,7 +1232,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	 * Decides whether to use editing context unlocking.
 	 * 
 	 * @return true if ECs should be unlocked after each RR-loop
-	 * @deprecated use {@link ERXEC#useUnlocker()}
+	 * @deprecated use {@link er.extensions.eof.ERXEC#useUnlocker()}
 	 */
 	@Deprecated
 	public Boolean useEditingContextUnlocker() {
@@ -1246,7 +1247,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	 * Decides whether or not to keep track of open editing context locks.
 	 * 
 	 * @return true if editing context locks should be tracked
-	 * @deprecated use {@link ERXEC#traceOpenLocks()}
+	 * @deprecated use {@link er.extensions.eof.ERXEC#traceOpenLocks()}
 	 */
 	@Deprecated
 	public Boolean traceOpenEditingContextLocks() {
@@ -2187,7 +2188,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	/**
 	 * Override to perform any last minute cleanup before the application
 	 * terminates. See
-	 * {@class er.extensions.ERXGracefulShutdown ERXGracefulShutdown} for where
+	 * {@link er.extensions.components.ERXGracefulShutdown ERXGracefulShutdown} for where
 	 * this is called if signal handling is enabled. Default implementation
 	 * calls terminate.
 	 */

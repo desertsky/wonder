@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.webobjects.appserver.WOApplication;
@@ -56,6 +57,7 @@ import com.webobjects.foundation.NSTimestamp;
 
 import er.extensions.appserver.ERXMessageEncoding;
 import er.extensions.eof.ERXConstant;
+import er.extensions.formatters.ERXSimpleHTMLFormatter;
 
 /**
  * Collection of {@link java.lang.String String} utilities. Contains
@@ -184,7 +186,9 @@ public class ERXStringUtilities {
 	 * @param b
 	 *            second string
 	 * @return the distance between the two strings
+	 * @deprecated use {@link StringUtils#getLevenshteinDistance(String, String)} instead
 	 */
+	@Deprecated
 	public static int levenshteinDistance(String a, String b) {
 		int n = a.length();
 		int m = b.length();
@@ -440,7 +444,7 @@ public class ERXStringUtilities {
      * @param s string to caclulate an Integer from
      * @return parsed Integer from the string or null
      *		if the string is not correctly formed.
-     * @see ERXConstant#integerForString(String)
+     * @see er.extensions.eof.ERXConstant#integerForString(String)
      */
     public static Integer integerWithString(String s) {
         try {
@@ -684,7 +688,9 @@ public class ERXStringUtilities {
      * @param newString to be inserted
      * @param buffer string to have the replacement done on it
      * @return string after having all of the replacement done.
+     * @deprecated use {@link StringUtils#replace(String, String, String)} instead
      */
+    @Deprecated
     public static String replaceStringByStringInString(String old, String newString, String buffer) {
         int begin, end;
         int oldLength = old.length();
@@ -719,7 +725,9 @@ public class ERXStringUtilities {
      * @param replacementString the string with which to replace stringToReplace.
      * @return sourceString with stringToReplace replaced with replacementString if it
      *         existed in sourceString.  otherwise, sourceString is returned.
+     * @deprecated use {@link StringUtils#replaceOnce(String, String, String)} instead
      */
+    @Deprecated
     public static String stringByReplacingFirstOccurrenceOfStringWithString(final String sourceString, final String stringToReplace, final String replacementString) {
         final int indexOfMatch = sourceString.indexOf(stringToReplace);
         final String result;
@@ -1189,8 +1197,7 @@ public class ERXStringUtilities {
     public static String removeExtraDotsFromVersionString(String version) {
         int floatingPointIndex = version.indexOf("."); 
         if (floatingPointIndex >= 0  &&  floatingPointIndex + 1 < version.length()) {
-            String minorVersion = ERXStringUtilities.replaceStringByStringInString(".", "", 
-                                        version.substring(floatingPointIndex + 1));
+            String minorVersion = StringUtils.replace(version.substring(floatingPointIndex + 1), ".", "");
             version = version.substring(0, floatingPointIndex + 1) + minorVersion;
         }
         return version;
@@ -2354,10 +2361,78 @@ public class ERXStringUtilities {
 				stripped = stripped.replaceAll("&#8482;", "(TM)");
 			stripped = stripped.trim();
 			}
- 		}
- 		return stripped;
- 	}
-
+		}
+		return stripped;
+	}
+	
+    /**
+     * Removes all of the HTML tags from a given string.
+     * Note: this is a very simplistic implementation
+     * and will most likely not work with complex HTML.
+     * Note: for actual conversion of HTML tags into regular
+     * strings have a look at {@link ERXSimpleHTMLFormatter}
+     * @param s html string
+     * @return string with all of its html tags removed
+     */
+    // FIXME: this is so simplistic it will break if you sneeze
+    public static String removeHTMLTagsFromString(String s) {
+        StringBuffer result=new StringBuffer();
+        if (s != null && s.length()>0) {
+            int position=0;
+            while (position<s.length()) {
+                int indexOfOpeningTag=s.indexOf("<",position);
+                if (indexOfOpeningTag!=-1) {
+                    if (indexOfOpeningTag!=position)
+                        result.append(s.substring(position, indexOfOpeningTag));
+                    position=indexOfOpeningTag+1;
+                } else {
+                    result.append(s.substring(position, s.length()));
+                    position=s.length();
+                }
+                int indexOfClosingTag=s.indexOf(">",position);
+                if (indexOfClosingTag!=-1) {
+                    position= indexOfClosingTag +1;
+                } else {
+                    result.append(s.substring(position, s.length()));
+                    position=s.length();
+                }
+            }
+        }
+        return StringUtils.replace(result.toString(), "&nbsp;"," ");
+    }
+    
+    /**
+     * Returns the value stripped from HTML tags if <b>escapeHTML</b> is false.
+     * This makes sense because it is not terribly useful to have half-finished tags in your code.
+     * Note that the "length" of the resulting string is not very exact.
+     * FIXME: we could remove extra whitespace and character entities here
+     * @return value stripped from tags.
+     */
+    public static String strippedValue(String value, int length) {
+        if(value == null || value.length() < 1)
+            return null;
+        StringTokenizer tokenizer = new StringTokenizer(value, "<", false);
+        int token = value.charAt(0) == '<' ? 0 : 1;
+        String nextPart = null;
+        StringBuffer result = new StringBuffer();
+        int currentLength = result.length();
+        while (tokenizer.hasMoreTokens() && currentLength < length && currentLength < value.length()) {
+            if(token == 0)
+                nextPart = tokenizer.nextToken(">");
+            else {
+                nextPart = tokenizer.nextToken("<");
+                if(nextPart.length() > 0  && nextPart.charAt(0) == '>')
+                    nextPart = nextPart.substring(1);
+            }
+            if (nextPart != null && token != 0) {
+                result.append(nextPart);
+                currentLength += nextPart.length();
+            }
+            token = 1 - token;
+        }
+        return result.toString();
+    }
+	
 	/**
 	 * @deprecated use {@link #stripHtml(String, boolean)}
 	 */
@@ -2697,4 +2772,38 @@ public class ERXStringUtilities {
 		return retStr.toString();
 	}
 
+    /**
+     * Given an initial string and an array of substrings, 
+     * Removes any occurrences of any of the substrings
+     * from the initial string. Used in conjunction with
+     * fuzzy matching.
+     * @param newString initial string from which to remove other strings
+     * @param toBeCleaneds array of substrings to be removed from the initial string.
+     * @return cleaned string.
+     */
+    // FIXME: Should use a StringBuffer instead of creating strings all over the place.
+    public static String cleanString(String newString, NSArray<String> toBeCleaneds) {
+        String result=newString;
+        if (newString!=null) {
+            for(Enumeration e = toBeCleaneds.objectEnumerator(); e.hasMoreElements();){
+                String toBeCleaned = (String)e.nextElement();
+                if(newString.toUpperCase().indexOf(toBeCleaned)>-1){
+                    result=newString.substring(0, newString.toUpperCase().indexOf(toBeCleaned));
+                }
+            }
+        }
+        return result;
+    }
+	
+	public static boolean isBlank(String value) {
+		boolean isBlank = false;
+		if (value == null || value.trim().length() == 0) {
+			isBlank = true;
+		}
+		return isBlank;
+	}
+	
+	public static boolean isNotBlank(String value) {
+		return ! isBlank(value);
+	}
 }

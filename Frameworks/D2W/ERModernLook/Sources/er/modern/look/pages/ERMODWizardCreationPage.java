@@ -11,7 +11,6 @@ import com.webobjects.eocontrol.EOEnterpriseObject;
 import com.webobjects.foundation.NSMutableDictionary;
 import com.webobjects.foundation.NSNotificationCenter;
 
-import er.directtoweb.ERD2WContainer;
 import er.directtoweb.pages.ERD2WWizardCreationPage;
 import er.directtoweb.pages.templates.ERD2WWizardCreationPageTemplate;
 import er.extensions.eof.ERXEOControlUtilities;
@@ -75,7 +74,7 @@ public class ERMODWizardCreationPage extends ERD2WWizardCreationPageTemplate {
         // when the user gets back to the initial page
         errorMessages = new NSMutableDictionary();
         if (showPrevious() && _currentStep > 1) _currentStep--;
-        setCurrentTab((ERD2WContainer)tabSectionsContents().objectAtIndex(_currentStep-1));
+        setCurrentTab(tabSectionsContents().objectAtIndex(_currentStep-1));
         return null;
     }
 	
@@ -90,7 +89,7 @@ public class ERMODWizardCreationPage extends ERD2WWizardCreationPageTemplate {
         if (errorMessages.count()==0 && _currentStep < tabSectionsContents().count())
             _currentStep++;
         
-        setCurrentTab((ERD2WContainer)tabSectionsContents().objectAtIndex(_currentStep-1));
+        setCurrentTab(tabSectionsContents().objectAtIndex(_currentStep-1));
         return null;
     }
 	

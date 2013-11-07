@@ -1,6 +1,10 @@
 /*
 
+<<<<<<< HEAD
  Copyright � 2000 - 2007 Apple, Inc. All Rights Reserved.
+=======
+ Copyright 2000 - 2007 Apple, Inc. All Rights Reserved.
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
 
  The contents of this file constitute Original Code as defined in and are
  subject to the Apple Public Source License Version 1.1 (the 'License').
@@ -272,7 +276,13 @@ static const char *setOption3(cmd_parms *cmd, void *keys, const char *v1, const 
  *	array
  */
 static int copyTableEntries(void *req, const char *key, const char *val) {
+<<<<<<< HEAD
     req_addHeader((HTTPRequest *)req, key, val, 0);
+=======
+    if(strcmp(key, "SSL_SERVER_CERT") != 0 &&
+        strcmp(key, "SSL_CLIENT_CERT") != 0)
+        req_addHeader((HTTPRequest *)req, key, val, 0);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     return 1;
 }
 
@@ -329,7 +339,11 @@ static void copyHeaders(request_rec *r, HTTPRequest *req) {
 
 		// Make sure the cert is a valid length; < 1 is probably not valid.
 		if (certLen < 1) {
+<<<<<<< HEAD
 			//WOLog(WO_ERR, "invalid certificate length: %d ", certLen);
+=======
+			WOLog(WO_ERR, "invalid certificate length: %d ", certLen);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
 		} else {
 			// Alloc space for the base64 encoded form of the cert.
 			char *encodedHdr = apr_pcalloc(r->pool, apr_base64_encode_len(certLen));
@@ -352,25 +366,41 @@ static void copyHeaders(request_rec *r, HTTPRequest *req) {
 #if defined(APACHE_SERVERSIGNATURE)
     req_addHeader(req, "SERVER_SIGNATURE", ap_psignature("", r), 0);
 #endif
+<<<<<<< HEAD
     req_addHeader(req, "SERVER_SOFTWARE", ap_get_server_description(), 0);
+=======
+    req_addHeader(req, "SERVER_SOFTWARE", ap_get_server_banner(), 0);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     req_addHeader(req, "SERVER_NAME", s->server_hostname, 0);
 
     port = (char *)WOMALLOC(32);
     if (port) {
+<<<<<<< HEAD
         apr_snprintf(port, sizeof(port), "%u", s->port);
+=======
+        apr_snprintf(port, sizeof(port), "%d", ap_get_server_port(r));
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
         req_addHeader(req, "SERVER_PORT", port, STR_FREEVALUE);
     }
 
     req_addHeader(req, "REMOTE_HOST",
                   (const char *)ap_get_remote_host(c, r->per_dir_config, REMOTE_NAME, NULL), 0);
+<<<<<<< HEAD
     req_addHeader(req, "REMOTE_ADDR", c->client_ip, 0);
+=======
+    req_addHeader(req, "REMOTE_ADDR", r->useragent_ip, 0);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     req_addHeader(req, "DOCUMENT_ROOT", (char *)ap_document_root(r), 0);
     req_addHeader(req, "SERVER_ADMIN", s->server_admin, 0);
     req_addHeader(req, "SCRIPT_FILENAME", r->filename, 0);
 
     port = (char *)WOMALLOC(32);
     if (port) {
+<<<<<<< HEAD
         apr_snprintf(port, 32, "%d", ntohs(c->client_addr->sa.sin.sin_port));
+=======
+        apr_snprintf(port, 32, "%d", ntohs(r->useragent_addr->sa.sin.sin_port));
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
         req_addHeader(req, "REMOTE_PORT", port, STR_FREEVALUE);
     }
 
@@ -431,7 +461,12 @@ static void sendResponse(request_rec *r, HTTPResponse *resp) {
 	r->content_type = "text/html";
     }
 
+<<<<<<< HEAD
     ap_set_content_length(r, resp->content_length);
+=======
+   if((resp->flags & RESP_LENGTH_EXPLICIT) == RESP_LENGTH_EXPLICIT)
+	    ap_set_content_length(r, resp->content_length);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
 
 
     /*
@@ -441,6 +476,7 @@ static void sendResponse(request_rec *r, HTTPResponse *resp) {
     ap_rflush(r);
 
     /* resp->content_valid will be 0 for HEAD requests and empty responses */
+<<<<<<< HEAD
     if ( (!r->header_only) && (resp->content_valid) ) {
         while (resp->content_read < resp->content_length)
         {
@@ -449,6 +485,30 @@ static void sendResponse(request_rec *r, HTTPResponse *resp) {
 				break;
 			}
             resp_getResponseContent(resp, 1);
+=======
+    if ( (!r->header_only) && (resp->content_valid) )
+    {
+        while (resp->content_read < resp->content_length &&
+            (resp->flags & RESP_LENGTH_INVALID) != RESP_LENGTH_INVALID)
+        {
+            int count;
+
+            ap_rwrite(resp->content, resp->content_valid, r);
+            if (r->connection->aborted) {
+                break;
+            }
+
+            count = resp_getResponseContent(resp, 1);
+            if(count > 0)
+            {
+             // 2009/06/09: handle situations where content_length is wrong or
+             //             unset.  Read as much data as possible from the
+             //             WebObjects application and send the data to the
+             //             client-side.
+            resp->content_read += count;
+            resp->content_valid = count;
+            }
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
         }
 
         ap_rwrite(resp->content, resp->content_valid, r);
@@ -656,9 +716,18 @@ int WebObjects_translate(request_rec *r) {
     wc = ap_get_module_config(r->server->module_config, &WebObjects_module);
 
     WOLog(WO_DBG, "<WebObjects Apache Module> new translate: %s", r->uri);
+<<<<<<< HEAD
     if (strncmp(wc->WebObjects_alias, r->uri, strlen(wc->WebObjects_alias)) == 0) {
 
         url = WOURLComponents_Initializer;
+=======
+    if (strncmp(wc->WebObjects_alias, r->uri, strlen(wc->WebObjects_alias)) == 0 || (r->handler != NULL && strcasecmp(r->handler, WEBOBJECTS) == 0)) {
+#ifndef _MSC_VER // SWK changed url = WOURLComponents_Initializer; to memset(&url,0,sizeof(WOURLComponents));
+        url = WOURLComponents_Initializer;
+#else
+		memset(&url,0,sizeof(WOURLComponents));
+#endif
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
         urlerr = WOParseApplicationName(&url, r->uri);
         if (urlerr != WOURLOK && !((urlerr == WOURLInvalidApplicationName) && ac_authorizeAppListing(&url))) {
             WOLog(WO_DBG, "<WebObjects Apache Module> translate - DECLINED: %s", r->uri);
@@ -675,7 +744,11 @@ int WebObjects_translate(request_rec *r) {
          *	we'll take it - mark our handler...
          */
         r->handler = (char *)apr_pstrdup(r->pool, WEBOBJECTS);
+<<<<<<< HEAD
 		r->filename = (char *)apr_pstrdup(r->pool, r->uri);
+=======
+        r->filename = (char *)apr_pstrdup(r->pool, r->uri);
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
 
         return OK;
     }
@@ -695,19 +768,39 @@ static int WebObjects_handler (request_rec *r)
     WebObjects_config *conf;
     HTTPRequest *req;
     HTTPResponse *resp = NULL;
+<<<<<<< HEAD
     WOURLComponents wc = WOURLComponents_Initializer;
+=======
+#ifndef _MSC_VER // SWK changed url = WOURLComponents_Initializer;
+    WOURLComponents wc = WOURLComponents_Initializer;
+#else
+    WOURLComponents wc;
+#endif
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     const char *reqerr;
     int retval;
     const char *docroot;
     WOURLError urlerr;
+<<<<<<< HEAD
 
+=======
+#ifdef _MSC_VER // SWK changed url = WOURLComponents_Initializer;
+	memset(&wc,0,sizeof(WOURLComponents));
+#endif
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     /* 	We have to do a check here to see if our handler should process the request.
 	The WebObjects_translate phase should  have marked the request to be handled
 	by WebObjects if it matched the Adaptor's WebObjects alias.
 	Is this the best way to do this?  Can another module override our r->handler setting?
 	*/
+<<<<<<< HEAD
     if (NULL == r->handler || strcmp(r->handler, WEBOBJECTS) != 0) {
 	return DECLINED;
+=======
+	if (NULL == r->handler || strcasecmp(r->handler, WEBOBJECTS) != 0) {
+		WOLog(WO_DBG, "WebObjects_handler declined! %s", r->uri);
+		return DECLINED;
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     }
 
     _webobjects_server = r->server;
@@ -718,7 +811,28 @@ static int WebObjects_handler (request_rec *r)
         return DECLINED;
     }
 
+<<<<<<< HEAD
     urlerr = WOParseApplicationName(&wc, r->uri);
+=======
+    int shouldProcessUrl = 1;
+    const char *envApplicationName = apr_table_get(r->subprocess_env, "WOApplicationName");
+    if (NULL != envApplicationName) {
+        wc.prefix.start = 0;
+        wc.prefix.length = 0;
+        wc.applicationName.start = envApplicationName;
+        wc.applicationName.length = strlen(envApplicationName);
+        wc.requestHandlerPath.start = r->uri;
+        wc.requestHandlerPath.length = strlen(r->uri);
+        wc.webObjectsVersion.start = v4_url;
+        wc.webObjectsVersion.length = URLVersionLen;
+
+        shouldProcessUrl = 0;
+        urlerr = WOURLOK;
+    }
+    else {
+        urlerr = WOParseApplicationName(&wc, r->uri);
+    }
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     if (urlerr == WOURLOK) {
         WOLog(WO_DBG, "App Name: %s (%d)", wc.applicationName.start, wc.applicationName.length);
     } else {
@@ -751,6 +865,10 @@ static int WebObjects_handler (request_rec *r)
      *	build the request ....
      */
     req = req_new(r->method, NULL);
+<<<<<<< HEAD
+=======
+    req->shouldProcessUrl = shouldProcessUrl;
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     req->api_handle = r;				/* stash this in case it's needed */
 
     /*
@@ -789,7 +907,10 @@ static int WebObjects_handler (request_rec *r)
     wc.queryString.start = r->args;
     wc.queryString.length = r->args ? strlen(r->args) : 0;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f8eb344898117f2670568b9ab685138dac9e6076
     /*
      *	find path to webobjects apps
      */
