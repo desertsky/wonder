@@ -2806,4 +2806,17 @@ public class ERXStringUtilities {
 	public static boolean isNotBlank(String value) {
 		return ! isBlank(value);
 	}
+	
+	/**
+	 * Strips control characters 0-31 with the exception of 9, 10 and 13 from source.
+	 * @param source
+	 * @return a String without control characters 0-31 with the exception of 9, 10 and 13.
+	 */
+	public static String stripControlCharacters(String source) {
+		if (source != null && !source.isEmpty()) {
+			String regEx="[\\x00-\\x08]|\\x0b|\\x0c|[\\x0e-\\x1f]";
+			return source.replaceAll(regEx, "");		
+		}
+		return source;
+	}
 }

@@ -17,6 +17,7 @@ import com.webobjects.foundation.NSForwardException;
 import er.extensions.appserver.ERXResponse;
 import er.extensions.components.ERXComponentUtilities;
 import er.extensions.components.ERXNonSynchronizingComponent;
+import er.extensions.foundation.ERXStringUtilities;
 
 /**
  * Class for Excel Component EGWrapper.
@@ -92,6 +93,7 @@ public class EGWrapper extends ERXNonSynchronizingComponent {
 
             String contentString = newResponse.contentString();
             contentString = contentString.replaceAll("&nbsp;", "");
+            contentString = ERXStringUtilities.stripControlCharacters(contentString);
             if (log.isDebugEnabled()) {
                 log.debug("Converting content string:\n" + contentString);
             }
