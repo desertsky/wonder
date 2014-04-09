@@ -103,8 +103,8 @@ int transaction_init()
    return tr_lock == NULL;
 }
 
-#define haveTriedInstance(appreq, handle) (appreq->attemptedInstances[(handle)/8] & (1<<((handle)&7)))
-#define markTriedInstance(appreq, handle) (appreq->attemptedInstances[(handle)/8] |= (1<<((handle)&7)))
+#define haveTriedInstance(appreq, handle) (appreq->attemptedInstances[(handle)>>3] & (1<<((handle)&7)))
+#define markTriedInstance(appreq, handle) (appreq->attemptedInstances[(handle)>>3] |= (1<<((handle)&7)))
 /*
  * This function wraps the call to the load balancer's implementation of selectInstance.
  * If the load balancer returns AC_INVALID_HANDLE (could not find an instance), this
