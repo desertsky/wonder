@@ -50,7 +50,7 @@ typedef struct _WOAppReq {
    void *request;			/*	(HTTPRequest *)  */
    void *response;			/*	(HTTPResponse *) */
    struct _scheduler *scheduler;	/*      the scheduler to use for picking an instance for this request */
-   char attemptedInstances[WA_MAX_APP_INSTANCE_COUNT+7/8]; /* bit array of which instances have been tried (and failed) */
+   unsigned char attemptedInstances[WA_MAX_APP_INSTANCE_COUNT+7/8]; /* bit array of which instances have been tried (and failed) */
    unsigned int schedulerFailed;	/* 	if the scheduler fails to select an instance for this request */
    char redirect_url[WA_MAX_URL_LENGTH];	/* in case of error */
 } WOAppReq;

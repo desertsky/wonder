@@ -21,6 +21,13 @@ STRIP_FLAGS = -S
 endif
 # End MacOS X Specific Settings
 
+ifeq "SOLARIS" "${OS}"
+ENABLE_SSL_SUPPORT = -DAPACHE_SECURITY_ENABLED
+OPENSSL_INCL_FLAGS = -I/opt/sfw/include
+OPENSSL_LIB_FLAGS = -L/opt/sfw/lib -lcrypto -lssl
+INCLUDES += ${OPENSSL_INCL_FLAGS}
+LDFLAGS +=${OPENSSL_LIB_FLAGS}
+endif
 
 # Build steps
 # Get the list of source files from the ../Adaptor directory and change their extension to .o
