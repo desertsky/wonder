@@ -70,7 +70,6 @@ typedef int  intptr_t;
 #define WA_MAX_APP_COUNT		256	/* maximum number of applications the adaptor can keep track of */
 #define WA_MAX_APP_INSTANCE_COUNT	128	/* maximum number of instances of a single application the adaptor can keep track of */
 #define WA_MAX_URL_LENGTH		256	/* maximum length of a redirect url in the config, including the null */
-#define WA_MAX_ADDITIONAL_ARGS_LENGTH	0	/* maximum length of the additional args, including the null */
 #define WA_LB_MAX_NAME_LENGTH		16	/* maximum length of a load balancing routine's name, including the null */
 #define WA_APP_LB_INFO_SIZE		4	/* size in bytes to reserve for load balancing info in WOApp */
 #if defined(_MSC_VER) || defined(MINGW)  // SWK changed from 8 to 16 cause VS2005 uses _time_t_64
@@ -151,7 +150,6 @@ const char *adaptor_valueForKey(const char *option);
 /* Application settings keys */
 #define	WOSCHEDULER 		"scheduler"		/* scheduler to use */
 #define	WOERRREDIR		"redir"			/* redirect url */
-#define WOADDITIONALARGS	"additionalArgs"	/* Additional args */
 #define WOAPPNAME		"name"			/* WOApp name */
 #define	WORETRIES		"retries"		/* number of times to retry a request after communications failure  */
 #define	WODEADAPP		"dormant"		/* delay after failed connect() before retrying instance  */
@@ -171,9 +169,6 @@ const char *adaptor_valueForKey(const char *option);
 #if defined(SUPPORT_REFUSENEWSESSION_ATTR)
   #define WOREFUSENEWSESSIONS     "refuseNewSessions"
 #endif
-
-/* This one is defined above, but included again here to be complete. */
-/*#define WOADDITIONALARGS	"additionalArgs"*/	/* Additional args */
 
 #ifdef CGI
 #define X_WEBOBJECTS_HEADERS 1

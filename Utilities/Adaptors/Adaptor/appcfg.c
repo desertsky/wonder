@@ -652,8 +652,6 @@ static void updateAppKey(const char *key, const char *value, _WOApp *app)
       changed = updateStringSetting(key, app->loadbalance, value, WA_LB_MAX_NAME_LENGTH);
    else if (strcmp(key, WOERRREDIR) == 0)
       changed = updateStringSetting(key, app->redirect_url, value, WA_MAX_URL_LENGTH);
-   else if (strcmp(key, WOADDITIONALARGS) == 0)
-      changed = updateStringSetting(key, app->additionalArgs, value, WA_MAX_ADDITIONAL_ARGS_LENGTH);
    else if (strcmp(key, WOAPPNAME) == 0)
       changed = updateStringSetting(key, (char *)app->name, value, WA_MAX_APP_NAME_LENGTH);
    else if (strcmp(key, WORETRIES) == 0)
@@ -688,8 +686,6 @@ static void updateInstanceKey(const char *key, const char *value, _WOInstance *i
       changed = updateStringSetting(key, instance->instanceNumber, value, WA_MAX_INSTANCE_NUMBER_LENGTH);
    else if (strcmp(key, WOHOST) == 0)
       changed = updateStringSetting(key, instance->host, value, WA_MAX_HOST_NAME_LENGTH);
-   else if (strcmp(key, WOADDITIONALARGS) == 0)
-      changed = updateStringSetting(key, instance->additionalArgs, value, WA_MAX_ADDITIONAL_ARGS_LENGTH);
    else if (strcmp(key, WOPORT) == 0)
       changed = updateNumericSetting(key, &instance->port, value);
    else if (strcmp(key, WOSENDBUFSIZE) == 0)
@@ -1268,8 +1264,6 @@ void ac_buildInstanceList(String *content, WOApp *app, scheduler_t scheduler, co
 {
    int j, newSessionsTimeout, deadTimeout;
    WOInstance *inst;
-   int hasAdditionalArgs = 0, additionalArgsLocation;
-   const char additionalArgs[] = "<th>args</th>";
 
    *hasRegisteredInstances = 0;
    /* set up the table header */
@@ -1278,11 +1272,6 @@ void ac_buildInstanceList(String *content, WOApp *app, scheduler_t scheduler, co
 #if defined(SUPPORT_REFUSENEWSESSION_ATTR)
   str_appendLiteral(content, "<th>refuse new<br>sessions</th>");
 #endif
-
-   /* We may need an additional column in here, but we won't know until after we walk the instances. */
-   /* Insert the header now, and if we don't need it we will overwrite it later with whitespace. */
-   additionalArgsLocation = content->length;
-   str_appendLength(content, additionalArgs, sizeof(additionalArgs));
 
    /* let the scheduler append columns */
    if (scheduler && scheduler->WOAdaptorInfo)
@@ -1321,11 +1310,6 @@ void ac_buildInstanceList(String *content, WOApp *app, scheduler_t scheduler, co
 #if defined(SUPPORT_REFUSENEWSESSION_ATTR)
             str_appendf(content, "<td>%s</td>", (inst->refuseNewSessions == 1) ? "YES" : "NO");
 #endif
-            if (WA_MAX_ADDITIONAL_ARGS_LENGTH > 0 && inst->additionalArgs[0] != 0)
-            {
-               hasAdditionalArgs = 1;
-               str_appendf(content, "<td>%s</td>", inst->additionalArgs);
-            }
             if (scheduler && scheduler->WOAdaptorInfo)
                scheduler->WOAdaptorInfo(content, inst);
             str_appendLiteral(content, "</tr>");
@@ -1334,9 +1318,6 @@ void ac_buildInstanceList(String *content, WOApp *app, scheduler_t scheduler, co
       }
    }
    str_appendLiteral(content, "</table>");
-   /* if we didn't find any instances with additional args, "white out" the additional args header */
-   if (!hasAdditionalArgs)
-      memset(&content->text[additionalArgsLocation], ' ', sizeof(additionalArgs));
 }
 
 /* Produce html text describing the app list - for use in the WOAdaptorInfo page. */
@@ -1397,10 +1378,6 @@ void ac_listApps(String *content, const char *adaptor_url) {
             if (app->urlVersion != CURRENT_WOF_VERSION_MAJOR)
                str_appendf(content, "<tr><td>URL&nbsp;ver:&nbsp;%d", app->urlVersion);
 
-            /* additional args - only show if there is anything there */
-            if (WA_MAX_ADDITIONAL_ARGS_LENGTH > 0 && app->additionalArgs[0] != 0)
-               str_appendf(content, "<tr><td>args:&nbsp;%s</td></tr>", app->additionalArgs);
-            
             /* end of application settings; close the table */
             str_appendLiteral(content, "</table></td><td>");
 

@@ -11,7 +11,6 @@
                 redir=URL
                 poolsize=NUMBER
                 urlVersion=["3"|"4"]
-                additionalArgs="unspecified"
         >
         <instance    id=NUMBER  port=NUMBER  host=STRING
                 sendTimeout=NUMBER
@@ -20,7 +19,6 @@
                 sendBufSize=NUMBER
                 recvBufSize=NUMBER
                 refuseNewSessions=STRING
-                additionalArgs="unspecified"
         >
         </instance>
     </application>

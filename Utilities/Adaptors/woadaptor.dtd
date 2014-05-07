@@ -11,7 +11,6 @@
 			redir CDATA #IMPLIED
 			poolsize CDATA #IMPLIED
 			urlVersion ( 3 | 4 ) #IMPLIED
-			additionalArgs CDATA #IMPLIED>
 		<!ELEMENT instance EMPTY>
 			<!ATTLIST instance
 				id CDATA #REQUIRED 
@@ -23,4 +22,3 @@
 				sendBufSize CDATA #IMPLIED
 				recvBufSize CDATA #IMPLIED
 				refuseNewSessions CDATA #IMPLIED
-				additionalArgs CDATA #IMPLIED>
