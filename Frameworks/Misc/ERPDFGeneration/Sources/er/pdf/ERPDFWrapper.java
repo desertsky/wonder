@@ -25,6 +25,7 @@ import er.extensions.appserver.ERXResourceManager;
 import er.extensions.appserver.ERXResponse;
 import er.extensions.appserver.ERXWOContext;
 import er.extensions.components.ERXDynamicElement;
+import er.extensions.foundation.ERXStringUtilities;
 
 /**
  * ERPDFWrapper will render the containing component content as a PDF document.
@@ -86,7 +87,9 @@ public class ERPDFWrapper extends ERXDynamicElement implements WOActionResults {
       }
     }
     
-    NSData data = ERPDFUtilities.htmlAsPdf(response.contentString(), response.contentEncoding(), resourceUrlPrefix, config);
+    String contentString = response.contentString();
+    contentString = ERXStringUtilities.stripControlCharacters(contentString);
+    NSData data = ERPDFUtilities.htmlAsPdf(contentString, response.contentEncoding(), resourceUrlPrefix, config);
     return appendPDFs(data, context);
   }
   
