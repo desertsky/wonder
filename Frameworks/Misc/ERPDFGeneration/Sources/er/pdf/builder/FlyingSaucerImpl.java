@@ -2,7 +2,10 @@ package er.pdf.builder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
@@ -16,6 +19,7 @@ import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -86,7 +90,11 @@ public class FlyingSaucerImpl implements PDFBuilder {
     } catch (ParserConfigurationException e) {
       throw NSForwardException._runtimeExceptionForThrowable(e);
     }
-    InputStream is = new ByteArrayInputStream(document.getBytes(encoding));
+    InputStream inputStream = new ByteArrayInputStream(document.getBytes(encoding));
+    InputSource inputSource=new InputSource();
+    inputSource.setEncoding(encoding);
+    inputSource.setByteStream(inputStream);
+   
     ITextFontResolver resolver = renderer.getFontResolver();
     for (String font : fontsFromConfiguration(configuration)) {
       try {
@@ -97,7 +105,8 @@ public class FlyingSaucerImpl implements PDFBuilder {
     }
     
     try {
-      doc = builder.parse(is);
+    	//builder.setCharacterEncoding(encoding);
+      doc = builder.parse(inputSource);
       if (exception != null)
         throw exception;
       
