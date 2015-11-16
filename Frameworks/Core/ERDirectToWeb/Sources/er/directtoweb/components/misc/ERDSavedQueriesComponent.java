@@ -5,7 +5,7 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Enumeration;
 
-import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.log4j.Logger;
 
 import com.webobjects.appserver.WOComponent;
@@ -501,8 +501,8 @@ public class ERDSavedQueriesComponent extends WOComponent {
 	 *            ERCoreUserPreferences set
 	 * @param pageConfigurationName
 	 *            {@link String}
-	 * @return {@link NSDictionary} <br/>
-	 *         key - {@link String} name of savedQuery <br/>
+	 * @return {@link NSDictionary} <br>
+	 *         key - {@link String} name of savedQuery <br>
 	 *         value - {@link SavedQuery}
 	 */
 	public static NSDictionary savedQueriesForPageConfigurationNamed(WOSession session, String pageConfigurationName) {

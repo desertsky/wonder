@@ -2,8 +2,8 @@ package er.extensions.appserver;
 
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.webobjects.appserver.WODisplayGroup;
@@ -38,7 +38,10 @@ import er.extensions.eof.ERXS;
  * @param <T> data type of the displaygroup's objects
  */
 public class ERXDisplayGroup<T> extends WODisplayGroup {
-	private Field displayedObjectsField;
+	/**
+	 * {@code _displayedObjects} field in parent object
+	 */
+	private transient Field displayedObjectsField;
 	
 	/**
 	 * Do I need to update serialVersionUID?
@@ -52,16 +55,29 @@ public class ERXDisplayGroup<T> extends WODisplayGroup {
 
 	public ERXDisplayGroup() {
 		super();
-		try {
-			displayedObjectsField = WODisplayGroup.class.getDeclaredField("_displayedObjects");
-			displayedObjectsField.setAccessible(true);
+	}
+
+	/**
+	 * Fetches the {@code _displayedObjects} field from the parent
+	 * {@link WODisplayGroup}. This is used in the overriden
+	 * {@link #setSelectedObjects(NSArray)} method.
+	 * 
+	 * @return {@code _displayedObjects} field from parent object
+	 */
+	private Field displayedObjectsField() {
+		if (displayedObjectsField == null) {
+			try {
+				displayedObjectsField = WODisplayGroup.class.getDeclaredField("_displayedObjects");
+				displayedObjectsField.setAccessible(true);
+			}
+			catch (SecurityException e) {
+				throw NSForwardException._runtimeExceptionForThrowable(e);
+			}
+			catch (NoSuchFieldException e) {
+				throw NSForwardException._runtimeExceptionForThrowable(e);
+			}
 		}
-		catch (SecurityException e) {
-			throw NSForwardException._runtimeExceptionForThrowable(e);
-		}
-		catch (NoSuchFieldException e) {
-			throw NSForwardException._runtimeExceptionForThrowable(e);
-		}
+		return displayedObjectsField;
 	}
 	
 	/**
@@ -222,7 +238,7 @@ public class ERXDisplayGroup<T> extends WODisplayGroup {
 			// wrong indexes when calling displayedObjects()
 			NSMutableArray displayedObjects;
 			try {
-				displayedObjects = (NSMutableArray) displayedObjectsField.get(this);
+				displayedObjects = (NSMutableArray) displayedObjectsField().get(this);
 			}
 			catch (IllegalArgumentException e) {
 				throw NSForwardException._runtimeExceptionForThrowable(e);

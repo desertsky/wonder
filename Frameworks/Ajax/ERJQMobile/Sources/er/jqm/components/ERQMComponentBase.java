@@ -13,8 +13,8 @@ import er.extensions.foundation.ERXStringUtilities;
 import er.extensions.foundation.ERXValueUtilities;
 
 /**
- * Base for all JQueryMobile Components.<br />
- * <br />
+ * Base for all JQueryMobile Components.
+ * <p>
  * The following bindings are not present for all UI elements. See JQueryMobile documentation for a specific widget.
  * 
  * <pre>
@@ -75,6 +75,14 @@ abstract public class ERQMComponentBase extends ERXNonSynchronizingComponent
 			}
 		}
 		return _elementID;
+	}
+
+	/**
+	 * @return the elementID for jquery usage with leading #
+	 */
+	public String jqJavaScriptElementID()
+	{
+		return "#" + javaScriptElementID();
 	}
 
 	public boolean hasNonNullBinding(String key)

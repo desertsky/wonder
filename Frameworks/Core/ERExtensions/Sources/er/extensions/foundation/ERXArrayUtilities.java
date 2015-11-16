@@ -11,7 +11,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 
 import com.webobjects.eoaccess.EOEntity;
@@ -109,9 +109,9 @@ public class ERXArrayUtilities {
      * contents of the array, using the result of the valueForKey call as a key
      * in a dictionary. If passed a null array, null is returned. If passed a null
      * keyPath, an empty dictionary is returned. This is a typesafe variant of
-     * arrayGroupedByKeyPath(NSArray<V> objects, String keyPath).
+     * arrayGroupedByKeyPath(NSArray&lt;V&gt; objects, String keyPath).
      *
-     * <p>See arrayGroupedByKeyPath(NSArray<V> objects, String keyPath) for examples.</p>
+     * <p>See arrayGroupedByKeyPath(NSArray&lt;V&gt; objects, String keyPath) for examples.</p>
      *
      * <p>This method calls
      * arrayGroupedByKeyPath(NSArray objects, String keyPath, Object nullGroupingKey, String valueKeyPath)
@@ -134,21 +134,21 @@ public class ERXArrayUtilities {
      * contents of the array, using the result of the valueForKey call as a key
      * in a dictionary. If passed a null array, null is returned. If passed a null
      * keyPath, an empty dictionary is returned.
-     *
-     * <p>If one starts with:
+     * <p>
+     * If one starts with:
 <pre>( { lastName = "Barker"; firstName = "Bob"; favoriteColor = "blue"; },
 { firstName = "Bob"; favoriteColor = "red"; },
 { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } )</pre>
      * and one calls arrayGroupedByKeyPath(objects, "firstName"), one gets:
 <pre>{ "Bob" = ( { lastName = "Barker"; firstName = "Bob"; favoriteColor = "blue"; }, { firstName = "Bob"; favoriteColor = "red"; } );
-"Frank" = ( { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } ); }</pre><br/>
+"Frank" = ( { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } ); }</pre><br>
      * If one calls arrayGroupedByKeyPath(objects, "lastName"), one gets:
 <pre>{ "Bob" = ( { lastName = "Barker"; firstName = "Bob"; favoriteColor = "blue"; } );
 "Frank" = ( { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } );
-"**** NULL GROUPING KEY ****" = ( { firstName = "Bob"; favoriteColor = "red"; } ); }</pre></p>
-     *
-     * <p>This method calls arrayGroupedByKeyPath(objects, keyPath, includeNulls, valueKeyPath) with
-     * includeNulls set to true and valueKeyPath set to null.</p>
+"**** NULL GROUPING KEY ****" = ( { firstName = "Bob"; favoriteColor = "red"; } ); }</pre>
+     * <p>
+     * This method calls arrayGroupedByKeyPath(objects, keyPath, includeNulls, valueKeyPath) with
+     * includeNulls set to true and valueKeyPath set to null.
      * 
      * @param objects array of objects to be grouped
      * @param keyPath path into objects used to group the objects
@@ -170,10 +170,10 @@ public class ERXArrayUtilities {
      * the grouped arrays each have valueForKey called with valueKeyPath and the
      * grouped arrays are replaced with the results of those calls. This is a
      * typesafe variant of
-     * arrayGroupedByKeyPath(NSArray<T> objects, String keyPath, boolean includeNulls, String valueKeyPath).
-     *
-     * <p>See arrayGroupedByKeyPath(NSArray<T> objects, String keyPath, boolean includeNulls, String valueKeyPath)
-     * for examples.</p>
+     * arrayGroupedByKeyPath(NSArray&lt;T&gt; objects, String keyPath, boolean includeNulls, String valueKeyPath).
+     * <p>
+     * See arrayGroupedByKeyPath(NSArray&lt;T&gt; objects, String keyPath, boolean includeNulls, String valueKeyPath)
+     * for examples.
      *
      * @param objects array of objects to be grouped
      * @param keyPath path into objects used to group the objects
@@ -199,17 +199,17 @@ public class ERXArrayUtilities {
      * keyPath, an empty dictionary is returned. If valueKeyPath is not null, then
      * the grouped arrays each have valueForKey called with valueKeyPath and the
      * grouped arrays are replaced with the results of those calls.
-     * 
-     * <p>If one starts with:
+     * <p>
+     * If one starts with:
 <pre>( { lastName = "Barker"; firstName = "Bob"; favoriteColor = "blue"; },
 { firstName = "Bob"; favoriteColor = "red"; },
 { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } )</pre>
      * and one calls arrayGroupedByKeyPath(objects, "firstName", true, "favoriteColor"), one gets:
 <pre>{Frank = ("green"); Bob = ("blue", "red");</pre>
      * If one calls arrayGroupedByKeyPath(objects, "lastName", false, "favoriteColor"), one gets:
-<pre>{Further = ("green"); Barker = ("blue"); }</pre></p>
+<pre>{Further = ("green"); Barker = ("blue"); }</pre>
      * If one calls arrayGroupedByKeyPath(objects, "lastName", true, "favoriteColor"), one gets:
-<pre>{Further = ("green"); Barker = ("blue"); "**** NULL GROUPING KEY ****" = ("red"); }</pre></p>
+<pre>{Further = ("green"); Barker = ("blue"); "**** NULL GROUPING KEY ****" = ("red"); }</pre>
      *
      * @param objects array of objects to be grouped
      * @param keyPath path into objects used to group the objects
@@ -266,8 +266,8 @@ public class ERXArrayUtilities {
      * keyPath, an empty dictionary is returned. If valueKeyPath is not null, then
      * the grouped arrays each have valueForKey called with valueKeyPath and the
      * grouped arrays are replaced with the results of that call.
-     *
-     * <p>If one starts with:
+     * <p>
+     * If one starts with:
 <pre>( { lastName = "Barker"; firstName = "Bob"; favoriteColor = "blue"; },
 { firstName = "Bob"; favoriteColor = "red"; },
 { lastName = "Further"; firstName = "Frank"; favoriteColor = "green"; } )</pre>
@@ -276,7 +276,7 @@ public class ERXArrayUtilities {
      * If one calls arrayGroupedByKeyPath(objects, "lastName", "extra", "favoriteColor"), one gets:
 <pre>{Further = ("green"); Barker = ("blue"); "extra" = ("red"); }</pre>
      * If one calls arrayGroupedByKeyPath(objects, "lastName", null, "favoriteColor"), one gets:
-<pre>{Further = ("green"); Barker = ("blue"); "**** NULL GROUPING KEY ****" = ("red"); }</pre></p>
+<pre>{Further = ("green"); Barker = ("blue"); "**** NULL GROUPING KEY ****" = ("red"); }</pre>
      *
      * @param objects array of objects to be grouped
      * @param keyPath path into objects used to group the objects
@@ -483,25 +483,25 @@ public class ERXArrayUtilities {
      * @return result of comparison
      */
     public static <T> boolean arraysAreIdenticalSets(NSArray<? super T> a1, NSArray<? super T> a2) {
-    	if (a1 == null || a2 == null) {
-    		return a1 == a2;
-    	}
-        boolean result=true;
+        if (a1 == null || a2 == null) {
+            return a1 == a2;
+        }
+    	
         for (Enumeration<? super T> e=a1.objectEnumerator();e.hasMoreElements();) {
             Object i=e.nextElement();
             if (!a2.containsObject(i)) {
-                result=false; break;
+                return false;
             }
         }
-        if (result) {
-            for (Enumeration<? super T> e=a2.objectEnumerator();e.hasMoreElements();) {
-                Object i=e.nextElement();
-                if (!a1.containsObject(i)) {
-                    result=false; break;
-                }
+        
+        for (Enumeration<? super T> e=a2.objectEnumerator();e.hasMoreElements();) {
+            Object i=e.nextElement();
+            if (!a1.containsObject(i)) {
+                return false;
             }
         }
-        return result;
+        
+        return true;
     }
 
     /**
@@ -723,11 +723,12 @@ public class ERXArrayUtilities {
 
     /** 
      * Recursively flattens an array of arrays and individual
-     * objects into a single array of elements.<br/>
-     * <br/>
-     * For example:<br/>
-     * <code>NSArray foos;</code> //Assume exists<br/>
-     * <code>NSArray bars = (NSArray)foos.valueForKey("toBars");</code>
+     * objects into a single array of elements.
+     * <p>
+     * For example:
+     * <pre><code>NSArray foos; //Assume exists
+     * NSArray bars = (NSArray)foos.valueForKey("toBars");
+     * </code></pre>
      * In this case if <code>foos</code> contained five elements 
      * then the array <code>bars</code> will contain five arrays
      * each corresponding to what <code>aFoo.toBars</code> would
@@ -754,11 +755,12 @@ public class ERXArrayUtilities {
 
     /** 
      * Recursively flattens an array of arrays and individual
-     * objects into a single array of elements.<br/>
-     * <br/>
-     * For example:<br/>
-     * <code>NSArray foos;</code> //Assume exists<br/>
-     * <code>NSArray bars = (NSArray)foos.valueForKey("toBars");</code>
+     * objects into a single array of elements.
+     * <p>
+     * For example:
+     * <pre><code>NSArray foos; //Assume exists
+     * NSArray bars = (NSArray)foos.valueForKey("toBars");
+     * </code></pre>
      * In this case if <code>foos</code> contained five elements 
      * then the array <code>bars</code> will contain five arrays
      * each corresponding to what <code>aFoo.toBars</code> would
@@ -802,7 +804,8 @@ public class ERXArrayUtilities {
 
     /**
      * Creates an NSArray from a resource associated with a given bundle
-     * that is in property list format.<br/>
+     * that is in property list format.
+     * 
      * @param name name of the file or resource.
      * @param bundle NSBundle to which the resource belongs.
      * @return NSArray de-serialized from the property list.
@@ -1034,7 +1037,7 @@ public class ERXArrayUtilities {
      * This class adds support for chaining multiple array operators in a single 
      * keypath via its 
      * {@link er.extensions.foundation.ERXArrayUtilities.BaseOperator#contents(NSArray, String) contents} 
-     * method.<br/>
+     * method.
      */
     static abstract class BaseOperator implements NSArray.Operator {
     	
@@ -1061,9 +1064,9 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>sort</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
+     * for the key <b>sort</b>.
+     * <p>
+     * This allows for key value paths like:
      * <ol>
      * <li><code>myArray.valueForKey("@sort.firstName");</code></li>
      * <li><code>myArray.valueForKey("@sort.lastName,firstName.length");</code></li>
@@ -1101,12 +1104,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>fetchSpec</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKey("@fetchSpec.fetchUsers");</code><br/>
-     * <br/>
+     * for the key <b>fetchSpec</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKey("@fetchSpec.fetchUsers");</code></pre>
      * Which in this case would return myArray filtered and sorted by the
      * EOFetchSpecification named "fetchUsers" which must be a model-based fetchspec 
      * in the first object's entity.
@@ -1140,12 +1141,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>flatten</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKey("@flatten.someOtherPath");</code><br/>
-     * <br/>
+     * for the key <b>flatten</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKey("@flatten.someOtherPath");</code></pre>
      * Which in this case would return myArray flattened if myArray is an NSArray 
      * of NSArrays (of NSArrays etc) before continuing to process someOtherPath.
      * 
@@ -1169,12 +1168,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>isEmpty</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKey("@isEmpty");</code><br/>
-     * <br/>
+     * for the key <b>isEmpty</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKey("@isEmpty");</code></pre>
      * Which in this case would return {@link java.lang.Boolean#TRUE true} if the
      * myArray.count() == 0, or {@link java.lang.Boolean#FALSE false} if it is not.
      * This operator always ends computation.  Any keypath following the isEmpty
@@ -1186,7 +1183,7 @@ public class ERXArrayUtilities {
         }
 
         /**
-        * returns true if the given array is empty, usefull for WOHyperlink disabled binding.
+        * returns true if the given array is empty, useful for WOHyperlink disabled binding.
          * @param array array to be checked.
          * @param keypath the keypath. This value is ignored.
          * @return <code>Boolean.TRUE</code> if array is empty, <code>Boolean.FALSE</code> otherwise.
@@ -1199,15 +1196,13 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>subarrayWithRange</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKeyPath("@subarrayWithRange.20-3.someOtherPath");</code><br/>
-     * <br/>
+     * for the key <b>subarrayWithRange</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKeyPath("@subarrayWithRange.20-3.someOtherPath");</code></pre>
      * Which in this case would return the three objects from <code>myArray</code>, starting 
      * at the index of 20, before continuing to process <code>someOtherPath</code>.
-     * <br/><br/>
+     * <p>
      * Note that the syntax for the range argument is <b>not</b> startIndex-endIndex. The API 
      * matches that of NSRange.  You must provide a start index and an array length.
      *  
@@ -1251,12 +1246,9 @@ public class ERXArrayUtilities {
      * for the key <b>limit</b>, which is similar to subarrayWithRange except it is 
      * always from 0 to the limit value.  If the limit specified is larger than the 
      * size of the array, the entire array will be returned.
-     * 
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKeyPath("@limit.10.someOtherPath");</code><br/>
-     * <br/>
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKeyPath("@limit.10.someOtherPath");</code></pre>
      * Which in this case would return the first 10 objects in <code>myArray</code> 
      * before continuing to process <code>someOtherPath</code>.
      * 
@@ -1295,12 +1287,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>unique</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKeyPath("@unique.someOtherPath");</code><br/>
-     * <br/>
+     * for the key <b>unique</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKeyPath("@unique.someOtherPath");</code></pre>
      * Which in this case would return only those objects which are unique in myArray 
      * before continuing to process someOtherPath.
      * 
@@ -1328,12 +1318,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>removeNullValues</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKeyPath("@removeNullValues.someOtherPath");</code><br/>
-     * <br/>
+     * for the key <b>removeNullValues</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKeyPath("@removeNullValues.someOtherPath");</code></pre>
      * Which in this case would remove the occurrences of NSKeyValueCoding.Null from myArray
      * before continuing to process someOtherPath.
      * 
@@ -1359,13 +1347,10 @@ public class ERXArrayUtilities {
     }
 
     /**
-     * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} for the key <b>objectAtIndex</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKey("@objectAtIndex.3.firstName");</code><br/>
-     * <br/>
-     *
+     * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} for the key <b>objectAtIndex</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKey("@objectAtIndex.3.firstName");</code></pre>
      */
     public static class ObjectAtIndexOperator implements NSArray.Operator {
         public ObjectAtIndexOperator() {
@@ -1392,9 +1377,9 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>avgNonNull</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
+     * for the key <b>avgNonNull</b>.
+     * <p>
+     * This allows for key value paths like:
      * <ul>
      * <li><code>myArray.valueForKey("@avgNonNull.payment.amount");</code></li>
      * <li><code>myArray.valueForKey("payment.@avgNonNull.amount");</code></li>
@@ -1447,12 +1432,10 @@ public class ERXArrayUtilities {
 
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>reverse</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
-     * <br/>
-     * <code>myArray.valueForKey("@reverse.someOtherPath");</code><br/>
-     * <br/>
+     * for the key <b>reverse</b>.
+     * <p>
+     * This allows for key value paths like:
+     * <pre><code>myArray.valueForKey("@reverse.someOtherPath");</code></pre>
      * which would reverse the order of the array myArray before continuing to
      * process someOtherPath.
      * 
@@ -1476,9 +1459,9 @@ public class ERXArrayUtilities {
     
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>median</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
+     * for the key <b>median</b>.
+     * <p>
+     * This allows for key value paths like:
      * <ul>
      * <li><code>myArray.valueForKey("@median.payment.amount");</code></li>
      * <li><code>myArray.valueForKey("payment.@median.amount");</code></li>
@@ -1487,8 +1470,8 @@ public class ERXArrayUtilities {
      * which return the median of the array elements at the given key path. The 
      * median is the value for which half of the elements are above and half the 
      * elements are below. As such, an array sort is needed and this might be 
-     * very costly depending of the size of the array. 
-     * <br/><br/>
+     * very costly depending of the size of the array.
+     * <p>
      * The @median operator applies to the array of objects to its 
      * left if it is the last key in the path.  Otherwise it applies to the end 
      * of the keypath to its right.  It should not be followed by an array or 
@@ -1517,9 +1500,9 @@ public class ERXArrayUtilities {
     
     /**
      * Define an {@link com.webobjects.foundation.NSArray.Operator NSArray.Operator} 
-     * for the key <b>stdDev</b> and <b>popStdDev</b>.<br/>
-     * <br/>
-     * This allows for key value paths like:<br/>
+     * for the key <b>stdDev</b> and <b>popStdDev</b>.
+     * <p>
+     * This allows for key value paths like:
      * <ul>
      * <li><code>myArray.valueForKey("@stdDev.payment.amount");</code></li>
      * <li><code>myArray.valueForKey("payment.@stdDev.amount");</code></li>
@@ -1529,7 +1512,7 @@ public class ERXArrayUtilities {
      * is the standard deviation of the amounts. The standard deviation is a 
      * measure of the dispersion of a sample of numbers. The population standard 
      * deviation is used if you have the values for an entire population.
-     * <br/><br/>
+     * <p>
      * The standard deviation operator applies to the array of objects to its 
      * left if it is the last key in the path.  Otherwise it applies to the end 
      * of the keypath to its right.  It should not be followed by an array or 
@@ -1697,7 +1680,7 @@ public class ERXArrayUtilities {
     
     /**
      * Filters out all of the duplicate objects in
-     * a given array.<br/> Preserves the order now.
+     * a given array. Preserves the order now.
      * @param anArray to be filtered
      * @return filtered array.
      */
@@ -1919,8 +1902,8 @@ public class ERXArrayUtilities {
 
     /**
      * Displays a list of attributes off of
-     * objects in a 'friendly' manner. <br/>
-     * <br/>
+     * objects in a 'friendly' manner.
+     * <p>
      * For example, given an array containing three user
      * objects and the attribute key "firstName", the
      * result of calling this method would be the string:
@@ -2072,13 +2055,34 @@ public class ERXArrayUtilities {
     }
 
     /**
+     * Given an array of objects, returns a dictionary mapping the value by performing valueForKeyPath on each object in
+     * the array to the object in the array. This method assume that the value returned for the keyPath attribute will be unique for 
+     * all the objects in the array. In case of duplicate entry, the new object will replace the previous one in the dictionary.
+	 *
+     * This is a typesafe variant of dictionaryOfObjectsIndexedByKeyPath(NSArray&lt;V&gt; objects, String keyPath).
+     *
+     * Calls <code>dictionaryOfObjectsIndexedByKeyPathThrowOnCollision()</code> passing <code>false</code> for throwOnCollision.
+     *
+     * @param array array to index
+     * @param keyPath keyPath to index. If any object returns <code>null</code> or NSKeyValueCoding.NullValue for this keyPath, the
+     *        object is not put into the resulting dictionary.
+     * @return a dictionary indexing the given array. If array is <code>null</code>, an empty dictionary is returned.
+     */
+    public static <K, T> NSDictionary<K, T> dictionaryOfObjectsIndexedByKeyPath(final NSArray<T> array, final ERXKey<K> keyPath) {
+        return dictionaryOfObjectsIndexedByKeyPathThrowOnCollision(array, keyPath, false);
+    }
+
+    /**
+     * Given an array of objects, returns a dictionary mapping the value by performing valueForKeyPath on each object in
+     * the array to the object in the array. This method assume that the value returned for the keyPath attribute will be unique for 
+     * all the objects in the array. In case of duplicate entry, the new object will replace the previous one in the dictionary.
+     *
      * Calls <code>dictionaryOfObjectsIndexedByKeyPathThrowOnCollision()</code> passing <code>false</code> for throwOnCollision.
      * 
      * @param array array to index
      * @param keyPath keyPath to index. If any object returns <code>null</code> or NSKeyValueCoding.NullValue for this keyPath, the
      *        object is not put into the resulting dictionary.
      * @return a dictionary indexing the given array. If array is <code>null</code>, an empty dictionary is returned.
-     * @see #dictionaryOfObjectsIndexedByKeyPathThrowOnCollision(NSArray, String, boolean)
      */
     public static <K, T> NSDictionary<K, T> dictionaryOfObjectsIndexedByKeyPath(final NSArray<T> array, final String keyPath) {
         return dictionaryOfObjectsIndexedByKeyPathThrowOnCollision(array, keyPath, false);
@@ -2086,12 +2090,28 @@ public class ERXArrayUtilities {
 
     /**
      * Given an array of objects, returns a dictionary mapping the value by performing valueForKeyPath on each object in
-     * the array to the object in the array. This is similar in concept to but different in semantic from
-     * <code>arrayGroupedByKeyPath()</code>. That method is focused on multiple objects returning the same value for the keypath
-     * and, so, objects are grouped into arrays. That is not particularly useful when there aren't collisions in the array or when
-     * you don't care if there are collisions. For example, with a CreditCard EO object, one could rely on the paymentType.name value
-     * to be unique and thus you're more interested in being able to rapidly get to the EO. <code>arrayGroupedByKeyPath()</code>
-     * would require either flattening out the arrays or navigating to them every time.
+     * the array to the object in the array. This method assume that the value returned for the keyPath attribute will be unique for 
+     * all the objects in the array. In case of duplicate entry, if throwOnCollision is true, an exception is thrown, otherwise, the 
+     * the new object will replace the previous one in the dictionary.
+     * 
+     * This is a typesafe variant of dictionaryOfObjectsIndexedByKeyPath(NSArray&lt;V&gt; objects, String keyPath, boolean throwOnCollision).
+     *
+     * @param array array to index
+     * @param keyPath keyPath to index. If any object returns <code>null</code> or NSKeyValueCoding.NullValue for this keyPath, the
+     *        object is not put into the resulting dictionary.
+     * @param throwOnCollision if <code>true</code> and two objects in the array have the same non-null (or non-NullValue) value for keyPath,
+     *        an exception is thrown. If <code>false</code>, the last object in the array wins.
+     * @return a dictionary indexing the given array. If array is <code>null</code>, an empty dictionary is returned.
+     */
+    public static <K, T> NSDictionary<K, T> dictionaryOfObjectsIndexedByKeyPathThrowOnCollision(final NSArray<T> array, final ERXKey<K> keyPath, final boolean throwOnCollision) {
+    	return dictionaryOfObjectsIndexedByKeyPathThrowOnCollision(array, keyPath.key(), throwOnCollision);
+    }
+    
+    /**
+     * Given an array of objects, returns a dictionary mapping the value by performing valueForKeyPath on each object in
+     * the array to the object in the array. This method assume that the value returned for the keyPath attribute will be unique for 
+     * all the objects in the array. In case of duplicate entry, if throwOnCollision is true, an exception is thrown, otherwise, the 
+     * the new object will replace the previous one in the dictionary.
      *
      * @param array array to index
      * @param keyPath keyPath to index. If any object returns <code>null</code> or NSKeyValueCoding.NullValue for this keyPath, the
@@ -2200,7 +2220,7 @@ public class ERXArrayUtilities {
 	 * 
 	 * @return the new {@link NSArray} with the swapped elements
 	 * 
-	 * @throws {@link RuntimeException}
+	 * @throws RuntimeException
 	 *             if one of the {@link Object}s is not in the {@link NSArray}
 	 */
     public static <T> NSArray<T> arrayWithObjectsSwapped(final NSArray<T> array, final Object object1, final Object object2) {
@@ -2224,7 +2244,7 @@ public class ERXArrayUtilities {
 	 * 
 	 * @return the new {@link NSArray} with the swapped elements
 	 * 
-	 * @throws {@link RuntimeException} if one of the indexes is out of bound
+	 * @throws RuntimeException if one of the indexes is out of bound
 	 */
 	public static <T> NSArray<T> arrayWithObjectsAtIndexesSwapped(final NSArray<T> array, final int indexOfObject1, final int indexOfObject2) {
 		if (array == null || array.count() < 2) {
@@ -2252,7 +2272,7 @@ public class ERXArrayUtilities {
 	 * @param a - first object
 	 * @param b - second object
 	 * 
-	 * @throws {@link RuntimeException} if one or both indexes are out of bounds
+	 * @throws RuntimeException if one or both indexes are out of bounds
 	 */
 	public static <T> void swapObjectsInArray (NSMutableArray<T> array, T a, T b) {
 		if (array == null || array.count() < 2) {
@@ -2278,7 +2298,7 @@ public class ERXArrayUtilities {
 	 * @param indexOfA - index of the first object
 	 * @param indexOfB - index of the second object
 	 * 
-	 * @throws {@link RuntimeException} if one or both indexes are out of bounds
+	 * @throws RuntimeException if one or both indexes are out of bounds
 	 */
 	public static <T> void swapObjectsAtIndexesInArray (NSMutableArray<T> array, int indexOfA, int indexOfB) {
 		try {

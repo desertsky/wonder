@@ -14,8 +14,8 @@ import er.jqm.components.ERQMComponentBase;
  * List view (data-role="listview")
  * 
  * <pre>
- * isNumberedList true -> OL
- *                false -> UL
+ * isNumberedList true -&gt; OL
+ *                false -&gt; UL
  * 
  * id
  * filterFieldId
@@ -66,6 +66,7 @@ public class ERQMListView extends ERQMComponentBase
 	@Override
 	public void appendCustomTags(StringBuilder sb, NSMutableArray<String> classes, NSMutableArray<String> styles)
 	{
+	    appendStringTag(sb, "data-theme", null, "theme");
 		appendBooleanTag(sb, "data-autodividers", false, null);
 		appendStringTag(sb, "data-count-theme", null, "countBubble-theme");
 		appendStringTag(sb, "data-divider-theme", null, "divider-theme");

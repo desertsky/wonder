@@ -33,10 +33,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -62,6 +63,7 @@ import com.webobjects.appserver.WOTimer;
 import com.webobjects.appserver._private.WOComponentDefinition;
 import com.webobjects.appserver._private.WODeployedBundle;
 import com.webobjects.appserver._private.WOProperties;
+import com.webobjects.appserver._private.WOWebServicePatch;
 import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.eocontrol.EOObserverCenter;
 import com.webobjects.eocontrol.EOTemporaryGlobalID;
@@ -136,6 +138,7 @@ import er.extensions.statistics.ERXStats;
  * @property er.extensions.ERXApplication.StatisticsLogRotationFrequency
  * @property er.extensions.ERXApplication.developmentMode
  * @property er.extensions.ERXApplication.developmentMode
+ * @property er.extensions.ERXApplication.enableERXShutdownHook
  * @property er.extensions.ERXApplication.fixCachingEnabled
  * @property er.extensions.ERXApplication.lowMemBufferSize
  * @property er.extensions.ERXApplication.memoryLowThreshold
@@ -737,12 +740,15 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 					URL userPropertiesPath = null;
 					String mainBundleName = NSProperties._mainBundleName();
 
+					// Look for a jar file name like: myapp[-1.0][-SNAPSHOT].jar
+					Pattern mainBundleJarPattern = Pattern.compile("\\b" + mainBundleName.toLowerCase() + "[-\\.\\d]*(snapshot)?\\.jar");
+					
 					while (jarBundles.hasMoreElements()) {
 						URL url = jarBundles.nextElement();
 
 						String urlAsString = url.toString();
 
-						if (urlAsString.contains(mainBundleName + ".jar")) {
+						if (mainBundleJarPattern.matcher(urlAsString.toLowerCase()).find()) {
 							try {
 								propertiesPath = new URL(URLDecoder.decode(urlAsString, CharEncoding.UTF_8));
 								userPropertiesPath = new URL(propertiesPath.toExternalForm() + userName);
@@ -849,6 +855,11 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 		}
 	}
 	}
+	
+	// You should not use ERXShutdownHook when deploying as servlet.
+	protected static boolean enableERXShutdownHook() {
+		return ERXProperties.booleanForKeyWithDefault("er.extensions.ERXApplication.enableERXShutdownHook", true);
+	}
 
 	/**
 	 * Called when the application starts up and saves the command line
@@ -858,6 +869,11 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	 */
 	public static void main(String argv[], Class applicationClass) {
 		setup(argv);
+		
+		if(enableERXShutdownHook()) {
+			ERXShutdownHook.initERXShutdownHook();
+		}
+
 		WOApplication.main(argv, applicationClass);
 	}
 
@@ -1030,6 +1046,17 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	}
 
 	/**
+	 * This heuristic to determine if an application is deployed as servlet relays on the fact, 
+	 * that contextClassName() is set WOServletContext or ERXWOServletContext
+	 * 
+	 * @return true if the application is deployed as servlet.
+	 */
+	public boolean isDeployedAsServlet() {
+		return contextClassName().contains("Servlet"); // i.e one of WOServletContext or ERXWOServletContext
+	}
+
+
+	/**
 	 * Called prior to actually initializing the app. Defines framework load
 	 * order, class path order, checks patches etc.
 	 */
@@ -1042,9 +1069,12 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 		ERXConfigurationManager.defaultManager().setCommandLineArguments(argv);
 		ERXFrameworkPrincipal.setUpFrameworkPrincipalClass(ERXExtensions.class);
 		// NSPropertiesCoordinator.loadProperties();
-		ERXShutdownHook.useMe();
+		
+		if(enableERXShutdownHook()) {
+			ERXShutdownHook.useMe();
+		}
 	}
-
+	
 	/**
 	 * Installs several bugfixes and enhancements to WODynamicElements. Sets the
 	 * Context class name to "er.extensions.ERXWOContext" if it is "WOContext".
@@ -1103,6 +1133,16 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 		
 		ERXStats.initStatisticsIfNecessary();
 
+		try {
+			WOWebServicePatch.initServer();
+		} catch (Throwable e) {
+			Throwable cause = ERXExceptionUtilities.getMeaningfulThrowable(e);
+			if (!(cause instanceof ClassNotFoundException ||
+					cause instanceof NoClassDefFoundError)) {
+				e.printStackTrace();
+			}
+		}
+		
 		// WOFrameworksBaseURL and WOApplicationBaseURL properties are broken in 5.4.  
     	// This is the workaround.
 		frameworksBaseURL();
@@ -1219,6 +1259,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	        	_replaceApplicationPathReplace = "";
 	        }
 	    }
+
 	}
 
 	/**
@@ -1262,7 +1303,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 
 	/**
 	 * Configures the statistics logging for a given application. By default
-	 * will log to a file <base log directory>/<WOApp Name>-<host>-<port>.log
+	 * will log to a file &lt;base log directory&gt;/&lt;WOApp Name&gt;-&lt;host&gt;-&lt;port&gt;.log
 	 * if the base log path is defined. The base log path is defined by the
 	 * property <code>er.extensions.ERXApplication.StatisticsBaseLogPath</code>
 	 * The default log rotation frequency is 24 hours, but can be changed by
@@ -1372,16 +1413,19 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 
 	/**
 	 * Adds support for automatic application cycling. Applications can be
-	 * configured to cycle in two ways:<br/> <br/> The first way is by setting
+	 * configured to cycle in two ways:
+	 * <p>
+	 * The first way is by setting
 	 * the System property <b>ERTimeToLive</b> to the number of seconds (+ a
 	 * random interval of 10 minutes) that the application should be up before
 	 * terminating. Note that when the application's time to live is up it will
-	 * quit calling the method <code>killInstance</code>.<br/> <br/> The
+	 * quit calling the method <code>killInstance</code>.
+	 * <p>The
 	 * second way is by setting the System property <b>ERTimeToDie</b> to the
 	 * time in seconds after midnight when the app should be starting to refuse
 	 * new sessions. In this case when the application starts to refuse new
 	 * sessions it will also register a kill timer that will terminate the
-	 * application between 0 minutes and 1:00 minutes.<br/>
+	 * application between 0 minutes and 1:00 minutes.
 	 */
 	@Override
 	public void run() {
@@ -1702,11 +1746,12 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	/**
 	 * The name suffix is appended to the current name of the application. This
 	 * adds the ability to add a useful suffix to differentiate between
-	 * different sets of applications on the same machine.<br/> <br/> The name
-	 * suffix is set via the System property <b>ERApplicationNameSuffix</b>.<br/>
-	 * <br/> For example if the name of an application is Buyer and you want to
+	 * different sets of applications on the same machine.
+	 * <p>
+	 * The name suffix is set via the System property <b>ERApplicationNameSuffix</b>.
+	 * For example if the name of an application is Buyer and you want to
 	 * have a training instance appear with the name BuyerTraining then you
-	 * would set the ERApplicationNameSuffix to Training.<br/> <br/>
+	 * would set the ERApplicationNameSuffix to Training.
 	 * 
 	 * @return the System property <b>ERApplicationNameSuffix</b> or
 	 *         <code>null</code>
@@ -1726,7 +1771,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	/**
 	 * Adds the ability to completely change the applications name by setting
 	 * the System property <b>ERApplicationName</b>. Will also append the
-	 * <code>nameSuffix</code> if one is set.<br/> <br/>
+	 * <code>nameSuffix</code> if one is set.
 	 * 
 	 * @return the computed name of the application.
 	 */
@@ -1746,7 +1791,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	}
 
 	/**
-	 * This method returns {@link WOApplication}'s <code>name</code> method.<br/>
+	 * This method returns {@link WOApplication}'s <code>name</code> method.
 	 * 
 	 * @return the name of the application executable.
 	 */
@@ -1757,7 +1802,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	/**
 	 * Puts together a dictionary with a bunch of useful information relative to
 	 * the current state when the exception occurred. Potentially added
-	 * information:<br/>
+	 * information:
 	 * <ol>
 	 * <li>the current page name</li>
 	 * <li>the current component</li>
@@ -1767,7 +1812,7 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 	 * <li>the previous page list (from the WOStatisticsStore)</li>
 	 * </ol>
 	 * Also, in case the top-level exception was a EOGeneralAdaptorException,
-	 * then you also get the failed ops and the sql exception. <br/>
+	 * then you also get the failed ops and the sql exception.
 	 * 
 	 * @param e exception
 	 * @param context the current context
@@ -2129,29 +2174,33 @@ public abstract class ERXApplication extends ERXAjaxApplication implements ERXGr
 					long start = System.currentTimeMillis();
 					long inputBytesLength;
 					InputStream contentInputStream = response.contentInputStream();
-					byte[] compressedData;
+					NSData compressedData;
 					if (contentInputStream != null) {
 						inputBytesLength = response.contentInputStreamLength();
-						NSData compressedNSData = ERXCompressionUtilities.gzipInputStreamAsNSData(contentInputStream, (int)inputBytesLength);
-						//compressedData = compressedNSData._bytesNoCopy();
-						compressedData = compressedNSData.bytes();
-						response.setContentStream(null, 0, 0L);
+						compressedData = ERXCompressionUtilities.gzipInputStreamAsNSData(contentInputStream, (int)inputBytesLength);
+						response.setContentStream(null, 0, 0);
 					}
 					else {
 						NSData input = response.content();
 						inputBytesLength = input.length();
-						compressedData = (inputBytesLength > 0) ? ERXCompressionUtilities.gzipByteArray(input._bytesNoCopy()) : null;
+						if(inputBytesLength > 0)
+						{
+							compressedData = ERXCompressionUtilities.gzipByteArrayAsNSData(input._bytesNoCopy(), 0, (int)inputBytesLength);
+						} else
+						{
+							compressedData = NSData.EmptyData;
+						}
 					}
 					if ( inputBytesLength > 0 ) {
 						if (compressedData == null) {
 							// something went wrong
 						}
 						else {
-							response.setContent(new NSData(compressedData, new NSRange(0, compressedData.length), true));
-							response.setHeader(String.valueOf(compressedData.length), "content-length");
+							response.setContent(compressedData);
+							response.setHeader(String.valueOf(compressedData.length()), "content-length");
 							response.setHeader("gzip", "content-encoding");
 							if (log.isDebugEnabled()) {
-								log.debug("before: " + inputBytesLength + ", after " + compressedData.length + ", time: " + (System.currentTimeMillis() - start));
+								log.debug("before: " + inputBytesLength + ", after " + compressedData.length() + ", time: " + (System.currentTimeMillis() - start));
 							}
 						}
 					}
