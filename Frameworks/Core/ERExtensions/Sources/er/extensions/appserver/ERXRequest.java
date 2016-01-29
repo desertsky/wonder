@@ -443,9 +443,10 @@ public  class ERXRequest extends WORequest {
         				//
         				// only parse one cookie at a time => get(0)
         				HttpCookie httpCookie = HttpCookie.parse(cookies[i]).get(0);
+        				log.debug("Cookie: '"+httpCookie.getName()+"' = '"+httpCookie.getValue()+"'");
         				cookieDictionary.setObjectForKey(new NSArray<String>(httpCookie.getValue()), httpCookie.getName());
         			} catch (Throwable t) {
-        				log.warn(t + ":" + this);
+        				log.warn("Unable to parse cookie '"+cookies[i]+"' : "+t.getMessage());
         			}
         		}
         	}
