@@ -451,22 +451,13 @@ public  class ERXRequest extends WORequest {
     }
 
     /**
-     * Overridden because malformed cookie to return an empty dictionary
-     * if the super implementation throws an exception. This will happen
-     * if the request contains malformed cookie values.
-     * 
-     * DSS NOTE: just return _cookieDictionary() which parses the cookies one at
-     * a time and catches parse exceptions on a per cookie basis.
+     * Overridden to call _cookieDictionary() where we parse the cookies one
+     * at a time using java.net.HttpCookie so that we don't get an empty cookie
+     * dictionary if one cookie is malformed.
      */
     @Override
 	public NSDictionary cookieValues() {
     	return _cookieDictionary();
-//        try {
-//            return super.cookieValues();
-//        } catch (Throwable t) {
-//            log.warn("{}: {}", this, t, t);
-//            return NSDictionary.EmptyDictionary;
-//        }
     }    
 
     /**
