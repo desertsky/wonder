@@ -422,10 +422,6 @@ public  class ERXRequest extends WORequest {
      * @return a dictionary of cookies, parsed one cookie at a time
      */
     private NSDictionary _cookieDictionary() {
-//        if (_cookie == null)
-//            _cookie = _CookieParser.parse(_cookieDescription());
-//        return _cookie;
-        
         if (_cookieDictionary == null) {
         	NSMutableDictionary<String, NSArray<String>> cookieDictionary = new NSMutableDictionary<String, NSArray<String>>();
         	//
