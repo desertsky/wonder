@@ -6,7 +6,6 @@
  * included with this distribution in the LICENSE.NPL file.  */
 package er.extensions.components;
 
-import com.webobjects.appserver.WOAssociation;
 import com.webobjects.appserver.WOContext;
 import com.webobjects.appserver.WOResponse;
 
@@ -59,24 +58,6 @@ public class ERXSingleButton extends ERXStatelessComponent {
             !((ERXSession)session()).browser().isOmniWeb())
             result=false;
         return result;
-    }
-
-    @Deprecated
-    public String buttonCssClass() {
-    	String css = (String) valueForBinding("css");
-    	if(css == null) {
-    		css = "";
-    	}
-    	WOAssociation assoc = _associationWithName("action");
-    	if(assoc != null) {
-    		css += " " + ERXSubmitButton.STYLE_PREFIX + assoc.keyPath().replaceAll("\\W+", "");
-    	} else {
-    		css += " " + ERXSubmitButton.STYLE_PREFIX + valueForBinding("directActionName");
-    	}
-    	if(css.length() == 0) {
-    		css = null;
-    	}
-    	return css;
     }
 
     public boolean useButton() {

@@ -6,8 +6,6 @@ import com.webobjects.appserver.WOContext;
 import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSMutableArray;
 
-import er.extensions.appserver.ERXWOContext;
-
 /**
  * An Ajax.Updater as a button (that also submits the form and form values).
  * <p>
@@ -44,7 +42,7 @@ public class AjaxUpdaterButton extends AjaxUpdater {
     @Override
     protected String url() {
     	if (hasBinding(Bindings.action)) {
-    		return "'" + ERXWOContext.ajaxActionUrl(context()) + "'";
+    		return "'" + context().componentActionURL(application().ajaxRequestHandlerKey()) + "'";
     	} else return super.url();
     }
     

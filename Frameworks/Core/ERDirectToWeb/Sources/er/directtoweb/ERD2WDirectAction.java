@@ -42,7 +42,6 @@ import com.webobjects.foundation.NSForwardException;
 import com.webobjects.foundation.NSKeyValueCoding;
 import com.webobjects.foundation.NSMutableArray;
 import com.webobjects.foundation.NSMutableDictionary;
-import com.webobjects.foundation.NSNumberFormatter;
 import com.webobjects.foundation.NSSelector;
 import com.webobjects.foundation.NSTimestampFormatter;
 
@@ -225,12 +224,6 @@ public abstract class ERD2WDirectAction extends ERXDirectAction {
     		}
     	}
     	return fs;
-    }
-
-    /** @deprecated use {@link #primaryKeyFromRequest(EOEditingContext, String)} */
-    @Deprecated
-    public Number primaryKeyFromRequest() {
-        return context().request().numericFormValueForKey(primaryKeyKey, new NSNumberFormatter("#"));
     }
 
     public NSDictionary primaryKeyFromRequest(EOEditingContext ec, String entityName) {

@@ -6,7 +6,8 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.webobjects.appserver.WOApplication;
 import com.webobjects.appserver.WOContext;
@@ -33,9 +34,7 @@ import er.extensions.localization.ERXLocalizer;
  * The request is created via {@link ERXApplication#createRequest(String, String, String, Map, NSData, Map)}.
  */
 public  class ERXRequest extends WORequest {
-
-	/** logging support */
-    public static final Logger log = Logger.getLogger(ERXRequest.class);
+    private static final Logger log = LoggerFactory.getLogger(ERXRequest.class);
 
     public static final String UNKNOWN_HOST = "UNKNOWN";
 
@@ -230,7 +229,7 @@ public  class ERXRequest extends WORequest {
             try {
                 aDate = dateFormatter.parse(aDateString);
             } catch (java.text.ParseException e) {
-               log.error(e);
+               log.error("Could not parse date '{}'.", aDateString, e);
             }
         }
         return aDate == null ? null : new NSTimestamp(aDate);
@@ -388,9 +387,9 @@ public  class ERXRequest extends WORequest {
         try {
             languages=languages.sortedArrayUsingComparator(COMPARE_Qs);
         } catch (NSComparator.ComparisonException e) {
-            log.warn("Couldn't sort language array "+languages+": "+e);
+            log.warn("Couldn't sort language array {}.", languages, e);
         } catch (NumberFormatException e2) {
-            log.warn("Couldn't sort language array "+languages+": "+e2);
+            log.warn("Couldn't sort language array {}.", languages, e2);
         }
         NSMutableArray<String> languagePrefix = new NSMutableArray<String>(languages.count());
         for (int languageNum = languages.count() - 1; languageNum >= 0; languageNum--) {
@@ -469,8 +468,7 @@ public  class ERXRequest extends WORequest {
 //        try {
 //            return super.cookieValues();
 //        } catch (Throwable t) {
-//            log.warn(t + ":" + this);
-//            log.warn(t);
+//            log.warn("{}: {}", this, t, t);
 //            return NSDictionary.EmptyDictionary;
 //        }
     }    
@@ -542,15 +540,6 @@ public  class ERXRequest extends WORequest {
         byte[] bytes = up.getBytes();
         String encodedString = Base64.encodeBase64String(bytes);
         setHeader("Basic " +  encodedString, "authorization");
-    }
-    
-    /**
-     * @return remote client host address
-     * @deprecated use {@link #remoteHostAddress()}
-     */
-    @Deprecated
-	public String remoteHost() {
-    	return remoteHostAddress();
     }
 
     /**
