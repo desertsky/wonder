@@ -104,7 +104,7 @@ public class EGWrapper extends ERXNonSynchronizingComponent {
             }
             InputStream stream = new ByteArrayInputStream(bytes);
 
-            EGSimpleTableParser parser = new EGSimpleTableParser(stream, fonts(), styles());
+            EGSimpleTableParser parser = parser(stream);
             try {
 	            NSData data = parser.data();
 	            if((hasBinding("data") && canSetValueForBinding("data")) ||
@@ -120,7 +120,7 @@ public class EGWrapper extends ERXNonSynchronizingComponent {
 	            } else {
 	                String fileName = fileName();
 	                if(fileName == null) {
-	                    fileName = "results.xls";
+	                    fileName = defaultFilename();
 	                }
 	                
 	                response.disableClientCaching();
@@ -128,7 +128,7 @@ public class EGWrapper extends ERXNonSynchronizingComponent {
 	                response.setContent(data); // Changed by ishimoto because it was sooooo buggy and didn't work in Japanese
 	
 	                response.setHeader("inline; filename=\"" + fileName + "\"", "content-disposition");
-	                response.setHeader("application/vnd.ms-excel", "content-type");
+	                response.setHeader(contentType(), "content-type");
 	            }
     		} catch (Exception ex) {
     			if (ex.getCause() instanceof SAXParseException) {
@@ -166,5 +166,17 @@ public class EGWrapper extends ERXNonSynchronizingComponent {
 			if (endIndex != -1) out +=  (i++) + " ";
 		}
 		return out;
+	}
+	
+	protected String defaultFilename() {
+		return "results.xls";
+	}
+	
+	protected String contentType() {
+		return "application/vnd.ms-excel";
+	}
+	
+	protected EGSimpleTableParser parser(InputStream stream) {
+		return new EGSimpleTableParser(stream, fonts(), styles());
 	}
 }

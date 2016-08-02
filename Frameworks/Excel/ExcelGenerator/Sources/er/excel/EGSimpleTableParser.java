@@ -16,16 +16,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class EGSimpleTableParser {
 	private static final Logger log = LoggerFactory.getLogger(EGSimpleTableParser.class);
 	
 	private InputStream _contentStream;
-	private HSSFWorkbook _workbook;
+	private Workbook _workbook;
 	private NSMutableDictionary _styles = new NSMutableDictionary();
 	private NSMutableDictionary _fonts = new NSMutableDictionary();
 	private NSMutableDictionary _styleDicts;
@@ -127,7 +127,7 @@ public class EGSimpleTableParser {
 		return null;
 	}
 
-    public HSSFWorkbook workbook() {
+    public Workbook workbook() {
     	if(_workbook == null) {
     		parse();
     	}
@@ -252,7 +252,7 @@ public class EGSimpleTableParser {
     		InputStream stream = _contentStream;
     		document = builder.parse(stream);
     		
-    		_workbook = new HSSFWorkbook();
+    		_workbook = createWorkbook();
     		
     		log.debug("{}", document.getDocumentElement());
     		
@@ -266,6 +266,10 @@ public class EGSimpleTableParser {
     	} catch(Exception ex) {
     	    throw new NSForwardException(ex);
     	}
+    }
+    
+    protected Workbook createWorkbook() {
+    	return new HSSFWorkbook();
     }
     
     private void parseNode(Node node) {
@@ -340,7 +344,7 @@ public class EGSimpleTableParser {
             sheetName = sheetName.substring(0,31);
             log.warn("Sheet name too long (max 31 Characters): {}", sheetName);
         }
-        HSSFSheet sheet = _workbook.createSheet(sheetName);
+        Sheet sheet = _workbook.createSheet(sheetName);
  
         NodeList rowNodes = tableNode.getChildNodes();
     	
@@ -360,7 +364,7 @@ public class EGSimpleTableParser {
     			addEntriesFromNode(rowDict, rowNode);
 
                 log.debug("Row: {}", rowNum);
-    			HSSFRow row = sheet.createRow(rowNum);
+    			Row row = sheet.createRow(rowNum);
     			
     			rowNum = rowNum + 1;
     			NodeList cellNodes = rowNode.getChildNodes();
@@ -370,7 +374,7 @@ public class EGSimpleTableParser {
     						&& ("td".equals(cellNode.getLocalName().toLowerCase())
     								|| "th".equals(cellNode.getLocalName().toLowerCase()))) {
     					int currentColumnNumber = row.getPhysicalNumberOfCells();
-						HSSFCell cell = row.createCell(currentColumnNumber); 
+						Cell cell = row.createCell(currentColumnNumber); 
     					Object value = null;
     					if(cellNode.getFirstChild() != null) {
     	   					value = cellNode.getFirstChild().getNodeValue();
@@ -421,7 +425,7 @@ public class EGSimpleTableParser {
     						case HSSFCell.CELL_TYPE_STRING:
 							default:
 								cell.setCellType(cellType.intValue());
-								cell.setCellValue(new HSSFRichTextString(value != null ? value.toString() : null));
+								cell.setCellValue(createRichTextString(value));
 								break;
     					}
     					
@@ -453,7 +457,7 @@ public class EGSimpleTableParser {
     						}
     					}
     					
-    					HSSFCellStyle style = styleWithDictionary(cellDict);
+    					CellStyle style = styleWithDictionary(cellDict);
     					
     					if(style != null) {
     						cell.setCellStyle(style);
@@ -487,8 +491,12 @@ public class EGSimpleTableParser {
     	}
     }
     
-    private HSSFFont fontWithID(String id) {
-    	HSSFFont font = (HSSFFont)_fonts.objectForKey(id);
+    protected RichTextString createRichTextString(Object value) {
+    	return new HSSFRichTextString(value != null ? value.toString() : null);
+    }
+    
+    private Font fontWithID(String id) {
+    	Font font = (Font)_fonts.objectForKey(id);
     	if(font == null) {
     		font = _workbook.createFont();
     		
@@ -526,7 +534,7 @@ public class EGSimpleTableParser {
 			"alignment","verticalAlignment","format"
 	});
     
-    private HSSFCellStyle styleWithDictionary(NSDictionary dict) {
+    private CellStyle styleWithDictionary(NSDictionary dict) {
     	String cellClass = dictValueForKey(dict, "class", null);
     	
     	log.debug("before - {}: {}", cellClass, dict);
@@ -550,13 +558,13 @@ public class EGSimpleTableParser {
     	}
     	log.debug("after - {}: {}", cellClass, dict);
     	
-    	HSSFCellStyle cellStyle = (HSSFCellStyle)_styles.objectForKey(dict);
+    	CellStyle cellStyle = (CellStyle)_styles.objectForKey(dict);
     	if(cellStyle == null) {
     		cellStyle = _workbook.createCellStyle();
     		
     		String fontID = dictValueForKey(dict, "font", null);
     		if(fontID != null) {
-    			HSSFFont font = fontWithID(fontID);
+    			Font font = fontWithID(fontID);
     			if(font == null) {
     				throw new IllegalArgumentException("Font ID not found!");
     			}
@@ -587,7 +595,7 @@ public class EGSimpleTableParser {
     		
     		String formatString = dictValueForKey(dict, "format", null);
     		if(formatString != null) {
-    			HSSFDataFormat format = _workbook.createDataFormat();
+    			DataFormat format = _workbook.createDataFormat();
     			short formatId = format.getFormat(formatString);
     			cellStyle.setDataFormat(formatId);
     		}
