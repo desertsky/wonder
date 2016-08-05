@@ -13,9 +13,11 @@ import com.webobjects.appserver.WOResponse;
 import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSMutableArray;
 import com.webobjects.foundation.NSMutableDictionary;
+import com.webobjects.foundation.NSTimeZone;
 import com.webobjects.foundation.NSTimestampFormatter;
 
 import er.extensions.appserver.ERXResponseRewriter;
+import er.extensions.appserver.ERXSession;
 import er.extensions.formatters.ERXJodaFormat;
 import er.extensions.localization.ERXLocalizer;
 
@@ -130,7 +132,12 @@ public class AjaxDatePicker extends AjaxComponent {
 
 		if ( ! (hasBinding("formatter") || hasBinding("format"))) {
 			format = "%m %d %Y";  // Default
-			formatter = new NSTimestampFormatter(format);
+    		NSTimestampFormatter timestampFormatter = new NSTimestampFormatter(format);
+    		if (ERXSession.autoAdjustTimeZone()) {
+    			timestampFormatter.setDefaultFormatTimeZone(NSTimeZone._nstimeZoneWithTimeZone(((ERXSession)session()).timeZone()));
+    			timestampFormatter.setDefaultParseTimeZone(NSTimeZone._nstimeZoneWithTimeZone(((ERXSession)session()).timeZone()));
+    		}
+    		formatter = timestampFormatter;
 		}
 		else if (hasBinding("formatter")) {
     		formatter = (Format) valueForBinding("formatter");
@@ -149,7 +156,12 @@ public class AjaxDatePicker extends AjaxComponent {
     	}
     	else {
     		format = (String) valueForBinding("format");
-    		formatter = new NSTimestampFormatter(format);
+    		NSTimestampFormatter timestampFormatter = new NSTimestampFormatter(format);
+    		if (ERXSession.autoAdjustTimeZone()) {
+    			timestampFormatter.setDefaultFormatTimeZone(NSTimeZone._nstimeZoneWithTimeZone(((ERXSession)session()).timeZone()));
+    			timestampFormatter.setDefaultParseTimeZone(NSTimeZone._nstimeZoneWithTimeZone(((ERXSession)session()).timeZone()));
+    		}
+    		formatter = timestampFormatter;
     	}
 		
 		format = translateSimpleDateFormatSymbols(format);
