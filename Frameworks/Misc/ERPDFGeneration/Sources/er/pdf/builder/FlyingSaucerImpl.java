@@ -124,7 +124,7 @@ public class FlyingSaucerImpl implements PDFBuilder {
     if (configuration == null)
       return NSArray.emptyArray();
     NSArray<String> fonts = (NSArray<String>) configuration.objectForKey("fonts");
-    NSMutableArray<String> result = new NSMutableArray<String>();
+    NSMutableArray<String> result = new NSMutableArray<>();
     String framework = (String) configuration.objectForKey("framework");
     if (fonts != null) {
       for (String font : fonts) {

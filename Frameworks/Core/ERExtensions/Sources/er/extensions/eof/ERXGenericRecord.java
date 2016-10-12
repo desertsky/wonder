@@ -88,7 +88,7 @@ public class ERXGenericRecord extends EOGenericRecord implements ERXGuardedObjec
 	private transient EOEntity _entity;
 
 	/** holds all subclass related Logger's */
-	private static final NSMutableDictionary<Class, Logger> classLogs = new NSMutableDictionary<Class, Logger>();
+	private static final NSMutableDictionary<Class, Logger> classLogs = new NSMutableDictionary<>();
 
 	private static final Object uuidPrototypeName = "uuid";
 
@@ -778,7 +778,7 @@ public class ERXGenericRecord extends EOGenericRecord implements ERXGuardedObjec
 			EOAttribute primaryKeyAttribute = primaryKeyAttributes.objectAtIndex(0);			
 			String prototypeName = primaryKeyAttribute.prototypeName();
 			if (prototypeName != null && prototypeName.equals(uuidPrototypeName)) {
-				return new NSDictionary<String, Object>(UUIDUtilities.generateAsNSData(), primaryKeyAttribute.name());
+				return new NSDictionary<>(UUIDUtilities.generateAsNSData(), primaryKeyAttribute.name());
 			}
 		}
 		return null;
@@ -793,7 +793,7 @@ public class ERXGenericRecord extends EOGenericRecord implements ERXGuardedObjec
 	 */
 	public void _setValueForPrimaryKey(Object value, String pkAttributeName) {
 		if (_primaryKeyDictionary == null) {
-			_primaryKeyDictionary = new NSDictionary<String, Object>(value, pkAttributeName);
+			_primaryKeyDictionary = new NSDictionary<>(value, pkAttributeName);
 		}
 		else {
 			NSMutableDictionary<String, Object> mutablePrimaryKeyDictionary = _primaryKeyDictionary.mutableClone();
@@ -1102,8 +1102,15 @@ public class ERXGenericRecord extends EOGenericRecord implements ERXGuardedObjec
 	 * validateValueForKey on the object's class description. The class
 	 * description for this object should be an
 	 * {@link ERXEntityClassDescription} or subclass. It is that class that
-	 * provides the hooks to convert model throw validation exceptions into
+	 * provides the hooks to convert model thrown validation exceptions into
 	 * {@link ERXValidationException} objects.
+	 * <p>
+	 * The order of validation processed is, if applicable:
+	 * <ol>
+	 * <li>EO class validation methods (e.g. <code>User.validateName()</code>)</li>
+	 * <li>model driven validation (see {@link ERXEntityClassDescription})</li>
+	 * <li>Partial's class validation methods</li>
+	 * </ol>
 	 * 
 	 * @param value
 	 *            to be validated for a given attribute or relationship
@@ -1124,7 +1131,7 @@ public class ERXGenericRecord extends EOGenericRecord implements ERXGuardedObjec
 			result = super.validateValueForKey(value, key);
 			EOClassDescription cd = classDescription();
 			if (cd instanceof ERXEntityClassDescription) {
-				((ERXEntityClassDescription) cd).validateObjectWithUserInfo(this, value, "validateForKey." + key, key);
+				((ERXEntityClassDescription) cd).validateObjectWithUserInfo(this, result, "validateForKey." + key, key);
 			}
 			result = _validateValueForKey(result, key);
 		}
